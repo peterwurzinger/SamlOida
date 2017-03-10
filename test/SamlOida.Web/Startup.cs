@@ -21,7 +21,7 @@ namespace SamlOida.Web
 
             app.UseSaml(new SamlOptions
             {
-                
+                AutomaticChallenge = true
             });
 
             app.UseMvc(routes =>
