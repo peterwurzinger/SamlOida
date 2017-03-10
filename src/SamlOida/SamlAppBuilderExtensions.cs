@@ -22,6 +22,7 @@ namespace SamlOida
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
+            //My father, my father, he's touching me now!
             return builder.UseMiddleware<SamlMiddleware>(Options.Create(options));
         }
 
