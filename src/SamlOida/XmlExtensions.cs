@@ -22,7 +22,7 @@ namespace SamlOida
             return binary;
         }
 
-        public static XmlDocument Inflate(this byte[] binary)
+        public static XmlDocument InflateToXmlDocument(this byte[] binary)
         {
             using (var stream = new MemoryStream(binary))
             {

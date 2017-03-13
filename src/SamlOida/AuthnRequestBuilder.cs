@@ -5,11 +5,6 @@ namespace SamlOida
 {
     public static class AuthnRequestBuilder
     {
-        private const string SamlProtocolNsPrefix = "samlp";
-        private const string SamlProtocolNamespace = "urn:oasis:names:tc:SAML:2.0:protocol";
-
-        private const string SamlAssertionNsPrefix = "saml";
-        private const string SamlAssertionNamespace = "urn:oasis:names:tc:SAML:2.0:assertion";
 
         //TODO: Extract those to SamlOptions
         private const string SamlLogOff = "https://logoff-uri.com";
@@ -20,11 +15,11 @@ namespace SamlOida
         {
             var doc = new XmlDocument();
             
-            var authnRequestElement = doc.CreateElement(SamlProtocolNsPrefix, "AuthnRequest", SamlProtocolNamespace);
+            var authnRequestElement = doc.CreateElement(SamlDefaults.SamlProtocolNsPrefix, "AuthnRequest", SamlDefaults.SamlProtocolNamespace);
 
             //Set namespaces explicitly avoiding to include namespace declarations in child elements
-            authnRequestElement.SetAttribute($"xmlns:{SamlAssertionNsPrefix}", SamlAssertionNamespace);
-            authnRequestElement.SetAttribute($"xmlns:{SamlProtocolNsPrefix}", SamlProtocolNamespace);
+            authnRequestElement.SetAttribute($"xmlns:{SamlDefaults.SamlAssertionNsPrefix}", SamlDefaults.SamlAssertionNamespace);
+            authnRequestElement.SetAttribute($"xmlns:{SamlDefaults.SamlProtocolNsPrefix}", SamlDefaults.SamlProtocolNamespace);
 
             //TODO: Use something else than Guid.NewGuid ?
             authnRequestElement.SetAttribute("ID", $"Issuer_{Guid.NewGuid()}");
@@ -33,7 +28,7 @@ namespace SamlOida
             authnRequestElement.SetAttribute("Destination", SamlLogOn);
             authnRequestElement.SetAttribute("AssertionConsumerServiceURL", assertionConsumerUrl);
 
-            var issuerElement = doc.CreateElement(SamlAssertionNsPrefix, "Issuer", SamlAssertionNamespace);
+            var issuerElement = doc.CreateElement(SamlDefaults.SamlAssertionNsPrefix, "Issuer", SamlDefaults.SamlAssertionNamespace);
             issuerElement.InnerText = Issuer;
 
             authnRequestElement.AppendChild(issuerElement);
