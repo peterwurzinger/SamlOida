@@ -1,13 +1,17 @@
-﻿using System.Security.Principal;
+﻿using System.Collections.Generic;
+using System.Security.Principal;
 
 namespace SamlOida
 {
-    public class ResponseParsingResult
+    internal class ResponseParsingResult
     {
-        /// <summary>
-        /// The identity parsed from the SAML-Response
-        /// </summary>
-        public IIdentity Identity { get; set; }
+
+        public ResponseParsingResult()
+        {
+            Attributes = new HashSet<SamlAttribute>();
+        }
+
+        public ISet<SamlAttribute> Attributes { get; }
 
         public bool Succeeded { get; set; }
 

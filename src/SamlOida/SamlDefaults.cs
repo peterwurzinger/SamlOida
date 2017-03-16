@@ -10,5 +10,9 @@
 
         public const string AuthenticationScheme = "Saml";
 
+        public const string SamlRequestQueryStringKey = "SamlRequest";
+        public const string SamlResponseQueryStringKey = "SamlResponse";
+        public const string RelayStateQueryStringKey = "RelayState";
+
     }
 }
