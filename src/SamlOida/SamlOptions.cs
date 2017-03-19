@@ -10,6 +10,7 @@ namespace SamlOida
             CallbackPath = "/signin-saml";
         }
 
+        public string Issuer { get; set; }
         public string LogOnUrl { get; set; }
 
         //TODO: Add Options here (?)

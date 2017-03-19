@@ -18,9 +18,7 @@ namespace SamlOida
             _ns = new XmlNamespaceManager(_document.NameTable);
             _ns.AddNamespace(SamlDefaults.SamlProtocolNsPrefix, SamlDefaults.SamlProtocolNamespace);
             _ns.AddNamespace(SamlDefaults.SamlAssertionNsPrefix, SamlDefaults.SamlAssertionNamespace);
-
-            //TODO Add dsig namespace
-            //_ns.AddNamespace("ds", SignedXml.XmlDsigNamespaceUrl);
+            _ns.AddNamespace("ds", "http://www.w3.org/2000/09/xmldsig#");
         }
 
         //https://docs.oasis-open.org/security/saml/v2.0/saml-schema-protocol-2.0.xsd
@@ -50,7 +48,6 @@ namespace SamlOida
             if (responseSignature != null)
             {
                 //TODO: Check signature
-                throw new NotImplementedException("Validating response signatures is currently not supported");
             }
 
             var issueInstantNode = responseNode.SelectSingleNode("@IssueInstant", _ns);
@@ -81,7 +78,7 @@ namespace SamlOida
                 if (signatureNode != null)
                 {
                     //TODO: Check signature
-                    throw new NotImplementedException("Validating assertion signatures is currently not supported");
+                    //throw new NotImplementedException("Validating assertion signatures is currently not supported");
                 }
                 var attributeStatements = assertionNode.SelectNodes($"{SamlDefaults.SamlAssertionNsPrefix}:AttributeStatement", _ns);
                 ParseAttributeStatements(attributeStatements);

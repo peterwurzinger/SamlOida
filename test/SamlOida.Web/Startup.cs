@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ namespace SamlOida.Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(sharedOptions => sharedOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme);
             services.AddMvc();
         }
 
@@ -19,9 +21,13 @@ namespace SamlOida.Web
         {
             loggerFactory.AddConsole();
 
+            app.UseCookieAuthentication();
+
             app.UseSaml(new SamlOptions
             {
-                AutomaticChallenge = true
+                AutomaticChallenge = true,
+                LogOnUrl = "https://unitarytest/stdportal-idp/test-pv@stdp.gv.at/profile/SAML2/Redirect/SSO",
+                Issuer = "https://localhost:50000/stdportal-sp/test-pv@stdp.gv.at/samloida@bmspot.gv.at"
             });
 
             app.UseMvc(routes =>

@@ -5,13 +5,8 @@ namespace SamlOida
 {
     public static class AuthnRequestBuilder
     {
-
-        //TODO: Extract those to SamlOptions
-        private const string SamlLogOff = "https://logoff-uri.com";
-        public const string SamlLogOn = "https://logon-uri.com";
-        private const string Issuer = "https://issuer.com";
-
-        public static XmlDocument Build(string assertionConsumerUrl)
+        
+        public static XmlDocument Build(string samlLogOnUri, string assertionConsumerUrl, string issuer)
         {
             var doc = new XmlDocument();
             
@@ -24,12 +19,15 @@ namespace SamlOida
             //TODO: Use something else than Guid.NewGuid ?
             authnRequestElement.SetAttribute("ID", $"Issuer_{Guid.NewGuid()}");
             authnRequestElement.SetAttribute("Version", "2.0");
-            authnRequestElement.SetAttribute("IssueInstant", DateTime.UtcNow.ToString("u"));
-            authnRequestElement.SetAttribute("Destination", SamlLogOn);
+            
+            //Does the Standardportal differ from SAML-Standard?
+            authnRequestElement.SetAttribute("IssueInstant", DateTime.UtcNow.ToString("o"));
+
+            authnRequestElement.SetAttribute("Destination", samlLogOnUri);
             authnRequestElement.SetAttribute("AssertionConsumerServiceURL", assertionConsumerUrl);
 
             var issuerElement = doc.CreateElement(SamlDefaults.SamlAssertionNsPrefix, "Issuer", SamlDefaults.SamlAssertionNamespace);
-            issuerElement.InnerText = Issuer;
+            issuerElement.InnerText = issuer;
 
             authnRequestElement.AppendChild(issuerElement);
             doc.AppendChild(authnRequestElement);

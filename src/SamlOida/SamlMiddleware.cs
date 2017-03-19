@@ -15,6 +15,9 @@ namespace SamlOida
             if (string.IsNullOrEmpty(options.Value.LogOnUrl))
                 throw new ArgumentNullException(nameof(options.Value.LogOnUrl));
 
+            if (string.IsNullOrEmpty(options.Value.Issuer))
+                throw new ArgumentNullException(nameof(options.Value.Issuer));
+
             if (string.IsNullOrEmpty(Options.SignInScheme))
                 Options.SignInScheme = sharedOptions.Value.SignInScheme;
         }
