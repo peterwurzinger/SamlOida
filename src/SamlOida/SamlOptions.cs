@@ -13,9 +13,16 @@ namespace SamlOida
             AcceptSignedAssertionsOnly = false;
         }
 
-        public string Issuer { get; set; }
-        public string LogOnUrl { get; set; }
+        public string ServiceProviderEntityId { get; set; }
         public TimeSpan IssueInstantExpiration { get; set; }
         public bool AcceptSignedAssertionsOnly { get; set; }
+
+        public SamlBindingOptions SamlBindingOptions { get; set; }
+    }
+
+    public class SamlBindingOptions
+    {
+        public SamlBindingBehavior BindingBehavior { get; set; }
+        public string IdentityProviderSignOnUrl { get; set; }
     }
 }

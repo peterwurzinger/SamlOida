@@ -11,14 +11,29 @@ namespace SamlOida
 {
     public class SamlHandler : RemoteAuthenticationHandler<SamlOptions>
     {
+        private readonly SamlBindingHandler _bindingHandler;
+
+        public SamlHandler(SamlBindingOptions bindingOptions)
+        {
+            switch (bindingOptions.BindingBehavior)
+            {
+                case SamlBindingBehavior.HttpRedirect:
+                    _bindingHandler = new HttpRedirectBindingHandler(bindingOptions);
+                    break;
+                case SamlBindingBehavior.HttpPost:
+                    _bindingHandler = new HttpPostBindingHandler(bindingOptions);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(bindingOptions.BindingBehavior));
+            }
+        }
+
         protected override Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
         {
-            var result = AuthnRequestBuilder.Build(Options.LogOnUrl, BuildRedirectUri(Options.CallbackPath), Options.Issuer);
+            var authnRequest = AuthnRequestBuilder.Build(Options.SamlBindingOptions.IdentityProviderSignOnUrl, BuildRedirectUri(Options.CallbackPath), Options.ServiceProviderEntityId);
 
-            var base64 = WebUtility.UrlEncode(Convert.ToBase64String(result.Deflate()));
-
-            //Redirect to IdP, SAML2 GET Profile
-            Response.Redirect($"{Options.LogOnUrl}?{SamlDefaults.SamlRequestQueryStringKey}={base64}&{SamlDefaults.RelayStateQueryStringKey}={WebUtility.UrlEncode(BuildRedirectUri(OriginalPath))}");
+            var encodedAuthnRequest = WebUtility.UrlEncode(Convert.ToBase64String(authnRequest.Deflate()));
+            _bindingHandler.HandleAuthnRequestAsync(Response, encodedAuthnRequest, BuildRedirectUri(OriginalPath));
             
             return Task.FromResult(true);
         }
@@ -37,7 +52,8 @@ namespace SamlOida
 
                 if (!string.IsNullOrEmpty(Request.Query[SamlDefaults.RelayStateQueryStringKey]))
                     relaystate = Request.Query[SamlDefaults.RelayStateQueryStringKey];
-            } else if (Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
+            }
+            else if (Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
             {
                 if (string.IsNullOrEmpty(Request.Form[SamlDefaults.SamlResponseQueryStringKey]))
                     throw new ArgumentException("SAMLResponse is empty");
@@ -45,13 +61,14 @@ namespace SamlOida
 
                 if (!string.IsNullOrEmpty(Request.Form[SamlDefaults.RelayStateQueryStringKey]))
                     relaystate = Request.Form[SamlDefaults.RelayStateQueryStringKey];
-            } else
+            }
+            else
             {
                 throw new InvalidOperationException($"Request method {Request.Method} is not supported");
             }
 
             //TODO: Check if RelayState references a local ressource (?)
-            
+
             XmlDocument doc;
             try
             {
@@ -82,7 +99,7 @@ namespace SamlOida
             }
 
             //TODO: Make IdentityMapper replaceable to be able to e.g. map custom attributes
-            var claims =  PvpIdentityMapper.Map(result);
+            var claims = PvpIdentityMapper.Map(result);
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, SamlDefaults.AuthenticationScheme));
 
             var props = new AuthenticationProperties
@@ -90,7 +107,7 @@ namespace SamlOida
                 RedirectUri = relaystate
             };
             var authTicket = new AuthenticationTicket(principal, props, SamlDefaults.AuthenticationScheme);
-            
+
             return Task.FromResult(AuthenticateResult.Success(authTicket));
         }
     }

@@ -12,11 +12,14 @@ namespace SamlOida
 
         public SamlMiddleware(RequestDelegate next, IOptions<SamlOptions> options, ILoggerFactory loggerFactory, UrlEncoder encoder, IOptions<SharedAuthenticationOptions> sharedOptions) : base(next, options, loggerFactory, encoder)
         {
-            if (string.IsNullOrEmpty(options.Value.LogOnUrl))
-                throw new ArgumentNullException(nameof(options.Value.LogOnUrl));
+            if (options.Value.SamlBindingOptions == null)
+                throw new ArgumentNullException(nameof(options.Value.SamlBindingOptions));
 
-            if (string.IsNullOrEmpty(options.Value.Issuer))
-                throw new ArgumentNullException(nameof(options.Value.Issuer));
+            if (string.IsNullOrEmpty(options.Value.SamlBindingOptions.IdentityProviderSignOnUrl))
+                throw new ArgumentNullException(nameof(options.Value.SamlBindingOptions.IdentityProviderSignOnUrl));
+
+            if (string.IsNullOrEmpty(options.Value.ServiceProviderEntityId))
+                throw new ArgumentNullException(nameof(options.Value.ServiceProviderEntityId));
 
             if (string.IsNullOrEmpty(Options.SignInScheme))
                 Options.SignInScheme = sharedOptions.Value.SignInScheme;
@@ -24,8 +27,7 @@ namespace SamlOida
         
         protected override AuthenticationHandler<SamlOptions> CreateHandler()
         {
-            //TODO: Differentiate between GET- and POST-Profile based on SAML-Options
-            return new SamlHandler();
+            return new SamlHandler(Options.SamlBindingOptions);
         }
     }
 

@@ -23,7 +23,12 @@ namespace SamlOida.Test
             app.UseSaml(new SamlOptions
             {
                 AutomaticChallenge = true,
-                LogOnUrl = $"http://localhost:5000{FakeIdpMiddleware.LogOnPath}"
+                SamlBindingOptions = new SamlBindingOptions
+                {
+                    BindingBehavior = SamlBindingBehavior.HttpRedirect,
+                    IdentityProviderSignOnUrl = $"http://localhost:5000{FakeIdpMiddleware.LogOnPath}"
+                }
+
             });
 
             app.UseFakeIdp();

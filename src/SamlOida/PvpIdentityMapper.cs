@@ -11,6 +11,7 @@ namespace SamlOida
         public const string EmailKey = "MAIL";
         public const string FirstNameKey = "GIVEN-NAME";
         public const string LastNameKey = "PRINCIPAL-NAME";
+        //TODO: Extend list of attributes to map
 
         internal static ISet<Claim> Map(ResponseParsingResult result)
         {

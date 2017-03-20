@@ -26,8 +26,12 @@ namespace SamlOida.Web
             app.UseSaml(new SamlOptions
             {
                 AutomaticChallenge = true,
-                LogOnUrl = "https://unitarytest/stdportal-idp/test-pv@stdp.gv.at/profile/SAML2/Redirect/SSO",
-                Issuer = "https://localhost:50000/stdportal-sp/test-pv@stdp.gv.at/samloida@bmspot.gv.at"
+                ServiceProviderEntityId = "https://localhost:50000/stdportal-sp/test-pv@stdp.gv.at/samloida@bmspot.gv.at",
+                SamlBindingOptions = new SamlBindingOptions
+                {
+                    BindingBehavior = SamlBindingBehavior.HttpPost,
+                    IdentityProviderSignOnUrl = "https://unitarytest/stdportal-idp/test-pv@stdp.gv.at/profile/SAML2/Redirect/SSO"
+                }
             });
 
             app.UseMvc(routes =>
