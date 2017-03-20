@@ -21,7 +21,7 @@ namespace SamlOida.FakeIdp
             {
                 //Time to shine
                 var samlRequest = ctx.Request.Query["SAMLRequest"];
-                var document = Convert.FromBase64String(samlRequest).InflateToXmlDocument();
+                var document = Convert.FromBase64String(samlRequest).ToXmlDocument();
 
                 switch (document.FirstChild.LocalName)
                 {
