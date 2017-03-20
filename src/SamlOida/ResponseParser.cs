@@ -6,12 +6,14 @@ namespace SamlOida
     internal class ResponseParser
     {
         private readonly XmlDocument _document;
+        private readonly IResponseParsingOptions _parsingOptions;
         private readonly ResponseParsingResult _result;
         private readonly XmlNamespaceManager _ns;
 
-        internal ResponseParser(XmlDocument document)
+        internal ResponseParser(XmlDocument document, IResponseParsingOptions parsingOptions)
         {
             _document = document;
+            _parsingOptions = parsingOptions;
             _document.PreserveWhitespace = true;
 
             _result = new ResponseParsingResult();
@@ -47,21 +49,25 @@ namespace SamlOida
             var responseSignature = responseNode.SelectSingleNode($"ds:Signature", _ns);
             if (responseSignature != null)
             {
-                //TODO: Check signature
+                //TODO: Check signature, throw if invalid
             }
 
             var issueInstantNode = responseNode.SelectSingleNode("@IssueInstant", _ns);
             if (string.IsNullOrEmpty(issueInstantNode?.InnerText))
                 throw new ParsingException("Attribute IssueInstant missing");
+            
+            if (!DateTime.TryParse(issueInstantNode.InnerText, out DateTime issueInstant))
+                throw new ParsingException("Issue instant cannot be parsed");
 
-            //TODO: Verify timestamp
+            if ((DateTime.UtcNow - issueInstant) > _parsingOptions.IssueInstantExpiration)
+                throw new SamlException("Issue instant is too long ago");
 
-            //TODO: Zero or more elements of either Assertion or EncryptedAssertion can occour. Extract!
             var assertionNodes = responseNode.SelectNodes($"{SamlDefaults.SamlAssertionNsPrefix}:Assertion", _ns);
             ParseAssertion(assertionNodes);
-            var encryptedAssertionNodes = responseNode.SelectNodes($"{SamlDefaults.SamlAssertionNsPrefix}:EncryptedAssertion", _ns);
 
-            if (encryptedAssertionNodes.Count > 0) { 
+            var encryptedAssertionNodes = responseNode.SelectNodes($"{SamlDefaults.SamlAssertionNsPrefix}:EncryptedAssertion", _ns);
+            if (encryptedAssertionNodes.Count > 0)
+            {
                 //1. Decrypt
                 //2. Parse as usual assertions
                 throw new NotImplementedException("Parsing encrypted assertions is currently not supported");
@@ -75,11 +81,15 @@ namespace SamlOida
             {
                 var assertionNode = assertions[i];
                 var signatureNode = assertionNode.SelectSingleNode("ds:Signature", _ns);
+
                 if (signatureNode != null)
                 {
-                    //TODO: Check signature
-                    //throw new NotImplementedException("Validating assertion signatures is currently not supported");
+                    //TODO: Check signature, throw if invalid
                 }
+                //If no signature present and only signed assertions will be accepted
+                else if (_parsingOptions.AcceptSignedAssertionsOnly)
+                    continue;
+
                 var attributeStatements = assertionNode.SelectNodes($"{SamlDefaults.SamlAssertionNsPrefix}:AttributeStatement", _ns);
                 ParseAttributeStatements(attributeStatements);
             }

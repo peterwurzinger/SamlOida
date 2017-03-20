@@ -66,7 +66,7 @@ namespace SamlOida
             ResponseParsingResult result;
             try
             {
-                var parser = new ResponseParser(doc);
+                var parser = new ResponseParser(doc, Options);
                 result = parser.Parse();
             }
             catch (ParsingException parseEx)
