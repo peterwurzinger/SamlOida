@@ -1,39 +1,51 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Xml;
 
 namespace SamlOida
 {
-    public static class XmlExtensions
-    {
-        public static byte[] Deflate(this XmlDocument document)
-        {
-            byte[] binary;
+	public static class XmlExtensions
+	{
+		public static byte[] Deflate(this XmlDocument document)
+		{
+			byte[] binary;
 
-            using (var stream = new MemoryStream())
-            {
-                using (var deflate = new DeflateStream(stream, CompressionMode.Compress, true))
-                {
-                    document.Save(deflate);
-                }
+			using (var stream = new MemoryStream())
+			{
+				using (var deflate = new DeflateStream(stream, CompressionMode.Compress, true))
+				{
+					document.Save(deflate);
+				}
 
-                binary = stream.ToArray();
-            }
-            return binary;
-        }
+				binary = stream.ToArray();
+			}
+			return binary;
+		}
 
-        public static XmlDocument InflateToXmlDocument(this byte[] binary)
-        {
-            using (var stream = new MemoryStream(binary))
-            {
-                using (var deflate = new DeflateStream(stream, CompressionMode.Decompress))
-                {
-                    var document = new XmlDocument();
-                    document.Load(deflate);
+		public static XmlDocument ToXmlDocument(this byte[] binary, bool tryInflate = true)
+		{
+			using (var stream = new MemoryStream(binary, false))
+			{
+				var document = new XmlDocument();
+                if (tryInflate) { 
+				    try { 
+				        using (var deflate = new DeflateStream(stream, CompressionMode.Decompress))
+				        {
+                            //Try to load from deflated stream
+					        document.Load(deflate);
+        			    }
+	   			    } catch(Exception)
+        		    {
+                        //Load from non-deflated stream
+		    		    document.Load(stream);
+                    }
                     return document;
                 }
-            }
-        }
-
-    }
+			    document.Load(stream);
+                return document;
+			}
+		}
+		
+	}
 }

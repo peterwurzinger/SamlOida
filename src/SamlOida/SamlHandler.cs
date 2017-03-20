@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNetCore.Authentication;
@@ -46,16 +45,23 @@ namespace SamlOida
 
                 if (!string.IsNullOrEmpty(Request.Form[SamlDefaults.RelayStateQueryStringKey]))
                     relaystate = Request.Form[SamlDefaults.RelayStateQueryStringKey];
-            } else {
-                throw new InvalidOperationException();
+            } else
+            {
+                throw new InvalidOperationException($"Request method {Request.Method} is not supported");
             }
 
             //TODO: Check if RelayState references a local ressource (?)
-
-            //TODO: URL-Encode/Decode!!
-            //var doc = Convert.FromBase64String(samlResponse).InflateToXmlDocument();
-            var doc = new XmlDocument();
-            doc.LoadXml(Encoding.UTF8.GetString(Convert.FromBase64String(samlResponse)));
+            
+            XmlDocument doc;
+            try
+            {
+                var binarySamlReponse = Convert.FromBase64String(samlResponse);
+                doc = binarySamlReponse.ToXmlDocument();
+            }
+            catch (Exception ex)
+            {
+                return Task.FromResult(AuthenticateResult.Fail(ex));
+            }
 
             ResponseParsingResult result;
             try
@@ -65,7 +71,7 @@ namespace SamlOida
             }
             catch (ParsingException parseEx)
             {
-                //HTTP400 = Bad Request
+                //HTTP 400 = Bad Request
                 Response.StatusCode = 400;
                 return Task.FromResult(AuthenticateResult.Fail(parseEx));
             }
