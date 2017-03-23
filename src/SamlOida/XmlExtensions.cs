@@ -28,17 +28,19 @@ namespace SamlOida
 			using (var stream = new MemoryStream(binary, false))
 			{
 				var document = new XmlDocument();
-                if (tryInflate) { 
-				    try { 
-				        using (var deflate = new DeflateStream(stream, CompressionMode.Decompress))
-				        {
+                if (tryInflate) {
+                    try
+                    {
+                        using (var deflate = new DeflateStream(stream, CompressionMode.Decompress))
+                        {
                             //Try to load from deflated stream
-					        document.Load(deflate);
-        			    }
-	   			    } catch(Exception)
-        		    {
+                            document.Load(deflate);
+                        }
+                    }
+                    catch (Exception)
+                    {
                         //Load from non-deflated stream
-		    		    document.Load(stream);
+                        return binary.ToXmlDocument(false);
                     }
                     return document;
                 }

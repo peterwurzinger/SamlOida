@@ -29,7 +29,7 @@ namespace SamlOida.Web
                 ServiceProviderEntityId = "https://localhost:50000/stdportal-sp/test-pv@stdp.gv.at/samloida@bmspot.gv.at",
                 SamlBindingOptions = new SamlBindingOptions
                 {
-                    BindingBehavior = SamlBindingBehavior.HttpPost,
+                    BindingBehavior = SamlBindingBehavior.HttpRedirect,
                     IdentityProviderSignOnUrl = "https://unitarytest/stdportal-idp/test-pv@stdp.gv.at/profile/SAML2/Redirect/SSO"
                 }
             });
