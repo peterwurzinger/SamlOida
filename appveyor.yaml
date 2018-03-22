@@ -1,0 +1,23 @@
+version: 1.0.0-ci.{build}
+
+image: Visual Studio 2017
+
+before_build:
+  - cmd: set build_options=--configuration Release --version-suffix ci.%appveyor_build_number%
+  - cmd: if [%appveyor_repo_branch%]==[release] set build_options=--configuration Release
+
+build_script:
+  - cmd: dotnet --info
+  - cmd: dotnet build %build_options%
+
+before_test:
+  - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:Clean;Build /p:Configuration=Release;DebugType=Full;TargetFramework=netcoreapp2.0
+
+test_script:
+  - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:OpenCover /p:Configuration=Release;TargetFramework=netcoreapp2.0
+
+after_test:
+  - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:ReportGenerator
+
+artifacts:
+  - path: TestResults
