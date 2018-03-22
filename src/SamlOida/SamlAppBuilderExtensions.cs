@@ -1,29 +1,24 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Authentication;
+using System;
 
 namespace SamlOida
 {
     public static class SamlAppBuilderExtensions
     {
-        public static IApplicationBuilder UseSaml(this IApplicationBuilder builder)
+        public static AuthenticationBuilder AddSaml(this AuthenticationBuilder builder)
+            => builder.AddSaml(SamlDefaults.AuthenticationScheme, _ => { });
+
+        public static AuthenticationBuilder AddSaml(this AuthenticationBuilder builder, Action<SamlOptions> configureOptions)
+            => builder.AddSaml(SamlDefaults.AuthenticationScheme, configureOptions);
+
+        public static AuthenticationBuilder AddSaml(this AuthenticationBuilder builder, string authenticationScheme, Action<SamlOptions> configureOptions)
+            => builder.AddSaml(authenticationScheme, "SAML", configureOptions);
+
+        public static AuthenticationBuilder AddSaml(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<SamlOptions> configureOptions)
         {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            return builder.UseMiddleware<SamlMiddleware>();
-        }
-
-        public static IApplicationBuilder UseSaml(this IApplicationBuilder builder, SamlOptions options)
-        {
-            if (builder == null)
-                throw new ArgumentNullException(nameof(builder));
-
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
-
-            //My father, my father, he's touching me now!
-            return builder.UseMiddleware<SamlMiddleware>(Options.Create(options));
+            //TODO: Add PostConfigureOptions
+            //builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<SamlOptions>, SamlPostConfigureOptions>());
+            return builder.AddRemoteScheme<SamlOptions, SamlHandler>(authenticationScheme, displayName, configureOptions);
         }
 
     }

@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Net;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using System.Xml;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.AspNetCore.Http.Features.Authentication;
+using AuthenticationProperties = Microsoft.AspNetCore.Authentication.AuthenticationProperties;
 
 namespace SamlOida
 {
@@ -13,32 +15,40 @@ namespace SamlOida
     {
         private readonly SamlBindingHandler _bindingHandler;
 
-        public SamlHandler(SamlBindingOptions bindingOptions)
+        public SamlHandler(IOptionsMonitor<SamlOptions> options, IOptionsMonitor<SamlBindingOptions> bindingOptions, ILoggerFactory loggerFactory, UrlEncoder urlEncoder, ISystemClock clock) 
+            : base(options, loggerFactory, urlEncoder, clock)
         {
-            switch (bindingOptions.BindingBehavior)
+            switch (bindingOptions.CurrentValue.BindingBehavior)
             {
                 case SamlBindingBehavior.HttpRedirect:
-                    _bindingHandler = new HttpRedirectBindingHandler(bindingOptions);
+                    _bindingHandler = new HttpRedirectBindingHandler(bindingOptions.CurrentValue);
                     break;
                 case SamlBindingBehavior.HttpPost:
-                    _bindingHandler = new HttpPostBindingHandler(bindingOptions);
+                    _bindingHandler = new HttpPostBindingHandler(bindingOptions.CurrentValue);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(bindingOptions.BindingBehavior));
+                    throw new ArgumentOutOfRangeException(nameof(bindingOptions.CurrentValue.BindingBehavior));
             }
         }
 
-        protected override Task<bool> HandleUnauthorizedAsync(ChallengeContext context)
+        public override Task<bool> HandleRequestAsync()
+        {
+            //TODO: Check if IdP-Initiated Signout
+
+            //TODO: Check if SP-Initiated Callback
+            return base.HandleRequestAsync();
+        }
+        
+
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             var authnRequest = AuthnRequestBuilder.Build(Options.SamlBindingOptions.IdentityProviderSignOnUrl, BuildRedirectUri(Options.CallbackPath), Options.ServiceProviderEntityId);
 
             var encodedAuthnRequest = WebUtility.UrlEncode(Convert.ToBase64String(authnRequest.Deflate()));
-            _bindingHandler.HandleAuthnRequestAsync(Response, encodedAuthnRequest, BuildRedirectUri(OriginalPath));
-            
-            return Task.FromResult(true);
+            return _bindingHandler.HandleAuthnRequestAsync(Response, encodedAuthnRequest, BuildRedirectUri(OriginalPath));
         }
 
-        protected override Task<AuthenticateResult> HandleRemoteAuthenticateAsync()
+        protected override Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
         {
             //Authenticate user based on SamlResponse
             string samlResponse;
@@ -77,7 +87,7 @@ namespace SamlOida
             }
             catch (Exception ex)
             {
-                return Task.FromResult(AuthenticateResult.Fail(ex));
+                return Task.FromResult(HandleRequestResult.Fail(ex));
             }
 
             ResponseParsingResult result;
@@ -90,12 +100,12 @@ namespace SamlOida
             {
                 //HTTP 400 = Bad Request
                 Response.StatusCode = 400;
-                return Task.FromResult(AuthenticateResult.Fail(parseEx));
+                return Task.FromResult(HandleRequestResult.Fail(parseEx));
             }
             catch (Exception ex)
             {
                 Response.StatusCode = 500;
-                return Task.FromResult(AuthenticateResult.Fail(ex));
+                return Task.FromResult(HandleRequestResult.Fail(ex));
             }
 
             //TODO: Make IdentityMapper replaceable to be able to e.g. map custom attributes
@@ -108,7 +118,7 @@ namespace SamlOida
             };
             var authTicket = new AuthenticationTicket(principal, props, SamlDefaults.AuthenticationScheme);
 
-            return Task.FromResult(AuthenticateResult.Success(authTicket));
+            return Task.FromResult(HandleRequestResult.Success(authTicket));
         }
     }
 }

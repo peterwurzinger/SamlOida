@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication;
 
 namespace SamlOida
 {
@@ -7,7 +7,6 @@ namespace SamlOida
     {
         public SamlOptions()
         {
-            AuthenticationScheme = SamlDefaults.AuthenticationScheme;
             CallbackPath = "/signin-saml";
             IssueInstantExpiration = TimeSpan.FromMinutes(5);
             AcceptSignedAssertionsOnly = false;

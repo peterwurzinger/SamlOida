@@ -17,11 +17,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		LICENSE = LICENSE
-		NuGet.config = NuGet.config
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SamlOida.FakeIdp", "test\SamlOida.FakeIdp\SamlOida.FakeIdp.csproj", "{59D85471-59B5-470B-AD37-A22DE880CEE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SamlOida.FakeIdp", "test\SamlOida.FakeIdp\SamlOida.FakeIdp.csproj", "{59D85471-59B5-470B-AD37-A22DE880CEE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,5 +89,8 @@ Global
 		{D4E7A60A-3E8C-4776-81F3-E7B6B1D2EF24} = {A7D3C219-C75D-4FBC-B06A-1A47ECFF69BA}
 		{68544426-827F-4CB5-8B74-82B4BD10E577} = {A7D3C219-C75D-4FBC-B06A-1A47ECFF69BA}
 		{59D85471-59B5-470B-AD37-A22DE880CEE1} = {A7D3C219-C75D-4FBC-B06A-1A47ECFF69BA}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F222D852-E226-488C-BFC5-5750D6C29278}
 	EndGlobalSection
 EndGlobal
