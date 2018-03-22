@@ -9,13 +9,11 @@ before_build:
 build_script:
   - cmd: dotnet --info
   - cmd: dotnet build %build_options%
-  - cmd: dotnet pack %build_options% --include-symbols
 
 before_test:
-  - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:Clean;Build /p:Configuration=Release;DebugType=Full
+  - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:Clean;Build /p:Configuration=Release;DebugType=Full;TargetFramework=netcoreapp2.0
 
 test_script:
-  - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:OpenCover /p:Configuration=Release;TargetFramework=net461
   - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:OpenCover /p:Configuration=Release;TargetFramework=netcoreapp2.0
 
 after_test:
