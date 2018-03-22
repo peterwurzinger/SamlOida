@@ -19,7 +19,7 @@ namespace SamlOida
                 throw new ArgumentNullException(nameof(result));
 
             if (result.Attributes == null)
-                throw new ArgumentNullException(nameof(result.Attributes));
+                throw new ArgumentException("Attributes must not be null.", nameof(result));
 
             var userName = result.Attributes.Get(UserNameKey);
             var mail = result.Attributes.Get(EmailKey);

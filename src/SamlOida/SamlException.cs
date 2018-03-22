@@ -4,6 +4,10 @@ namespace SamlOida
 {
     public class SamlException : Exception
     {
+        internal SamlException()
+        {
+
+        }
 
         internal SamlException(string message) : base(message)
         {

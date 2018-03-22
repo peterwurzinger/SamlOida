@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Xml;
 
 namespace SamlOida
@@ -21,7 +22,7 @@ namespace SamlOida
             authnRequestElement.SetAttribute("Version", "2.0");
             
             //Does the Standardportal differ from SAML-Standard?
-            authnRequestElement.SetAttribute("IssueInstant", DateTime.UtcNow.ToString("o"));
+            authnRequestElement.SetAttribute("IssueInstant", DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture));
 
             authnRequestElement.SetAttribute("Destination", samlLogOnUri);
             authnRequestElement.SetAttribute("AssertionConsumerServiceURL", assertionConsumerUrl);

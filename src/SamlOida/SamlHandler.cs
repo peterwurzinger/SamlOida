@@ -27,7 +27,7 @@ namespace SamlOida
                     _bindingHandler = new HttpPostBindingHandler(bindingOptions.CurrentValue);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(bindingOptions.CurrentValue.BindingBehavior));
+                    throw new ArgumentException(nameof(bindingOptions.CurrentValue.BindingBehavior));
             }
         }
 
@@ -42,7 +42,7 @@ namespace SamlOida
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            var authnRequest = AuthnRequestBuilder.Build(Options.SamlBindingOptions.IdentityProviderSignOnUrl, BuildRedirectUri(Options.CallbackPath), Options.ServiceProviderEntityId);
+            var authnRequest = AuthnRequestBuilder.Build(Options.SamlBindingOptions.IdentityProviderSignOnUrl.ToString(), BuildRedirectUri(Options.CallbackPath), Options.ServiceProviderEntityId);
 
             var encodedAuthnRequest = WebUtility.UrlEncode(Convert.ToBase64String(authnRequest.Deflate()));
             return _bindingHandler.HandleAuthnRequestAsync(Response, encodedAuthnRequest, BuildRedirectUri(OriginalPath));

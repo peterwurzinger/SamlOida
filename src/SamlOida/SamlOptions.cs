@@ -22,6 +22,6 @@ namespace SamlOida
     public class SamlBindingOptions
     {
         public SamlBindingBehavior BindingBehavior { get; set; }
-        public string IdentityProviderSignOnUrl { get; set; }
+        public Uri IdentityProviderSignOnUrl { get; set; }
     }
 }

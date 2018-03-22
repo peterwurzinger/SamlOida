@@ -4,6 +4,11 @@ namespace SamlOida
 {
     internal class ParsingException : SamlException
     {
+        internal ParsingException()
+        {
+
+        }
+
         internal ParsingException(string message) : base(message)
         {
         }
