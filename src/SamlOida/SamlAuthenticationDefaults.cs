@@ -1,6 +1,6 @@
 ﻿namespace SamlOida
 {
-    public static class SamlDefaults
+    public static class SamlAuthenticationDefaults
     {
         public const string SamlProtocolNsPrefix = "samlp";
         public const string SamlAssertionNsPrefix = "saml";
@@ -11,9 +11,9 @@
         public const string AuthenticationScheme = "Saml";
 
         //Uppercase is important!
-        public const string SamlRequestQueryStringKey = "SAMLRequest";
-        public const string SamlResponseQueryStringKey = "SAMLResponse";
-        public const string RelayStateQueryStringKey = "RelayState";
+        public const string SamlRequestKey = "SAMLRequest";
+        public const string SamlResponseKey = "SAMLResponse";
+        public const string RelayStateKey = "RelayState";
 
     }
 }

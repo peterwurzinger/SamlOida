@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Xml;
 
-namespace SamlOida
+namespace SamlOida.MessageHandler
 {
 	public static class XmlExtensions
 	{

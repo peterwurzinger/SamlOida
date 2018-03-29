@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SamlOida
+namespace SamlOida.MessageHandler.Parser
 {
     internal class ParsingException : SamlException
     {

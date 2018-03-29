@@ -10,7 +10,7 @@ namespace SamlOida.FakeIdp
         {
             var doc = new XmlDocument();
 
-            var responseElement = doc.CreateElement("samlp", "Response", SamlDefaults.SamlProtocolNamespace);
+            var responseElement = doc.CreateElement("samlp", "Response", SamlAuthenticationDefaults.SamlProtocolNamespace);
 
             var issueInstantAttribute = doc.CreateAttribute("IssueInstant");
             issueInstantAttribute.InnerText = DateTime.Now.ToString("u");
@@ -28,12 +28,12 @@ namespace SamlOida.FakeIdp
             versionAttribute.InnerText = "2.0";
             responseElement.Attributes.Append(versionAttribute);
 
-            var statusElement = doc.CreateElement("samlp", "Status", SamlDefaults.SamlProtocolNamespace);
-            var statusCodeElement = doc.CreateElement("samlp", "StatusCode", SamlDefaults.SamlProtocolNamespace);
+            var statusElement = doc.CreateElement("samlp", "Status", SamlAuthenticationDefaults.SamlProtocolNamespace);
+            var statusCodeElement = doc.CreateElement("samlp", "StatusCode", SamlAuthenticationDefaults.SamlProtocolNamespace);
             statusCodeElement.InnerText = "urn:oasis:names:tc:SAML:2.0:status:Success";
             statusElement.AppendChild(statusCodeElement);
 
-            var assertionElement = doc.CreateElement("saml", "Assertion", SamlDefaults.SamlAssertionNamespace);
+            var assertionElement = doc.CreateElement("saml", "Assertion", SamlAuthenticationDefaults.SamlAssertionNamespace);
             assertionElement.Attributes.Append(issueInstantAttribute);
             assertionElement.Attributes.Append(versionAttribute);
 

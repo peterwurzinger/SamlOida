@@ -1,4 +1,4 @@
-﻿namespace SamlOida
+﻿namespace SamlOida.Binding
 {
     public enum SamlBindingBehavior
     {

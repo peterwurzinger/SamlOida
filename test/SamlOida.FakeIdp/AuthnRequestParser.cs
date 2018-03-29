@@ -9,8 +9,8 @@ namespace SamlOida.FakeIdp
         public AuthnRequestParameters Parse(XmlDocument samlRequest)
         {
             var ns = new XmlNamespaceManager(samlRequest.NameTable);
-            ns.AddNamespace("samlp", SamlDefaults.SamlProtocolNamespace);
-            ns.AddNamespace("saml", SamlDefaults.SamlAssertionNamespace);
+            ns.AddNamespace("samlp", SamlAuthenticationDefaults.SamlProtocolNamespace);
+            ns.AddNamespace("saml", SamlAuthenticationDefaults.SamlAssertionNamespace);
 
             var assertionConsumerUrl = samlRequest.SelectSingleNode("samlp:AuthnRequest/@AssertionConsumerServiceURL", ns);
             var requestId = samlRequest.SelectSingleNode("samlp:AuthnRequest/@ID", ns);

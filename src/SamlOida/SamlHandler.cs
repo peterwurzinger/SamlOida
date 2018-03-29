@@ -1,100 +1,72 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SamlOida.MessageHandler;
+using SamlOida.MessageHandler.Parser;
+using SamlOida.Model;
 using System;
-using System.Net;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using System.Xml;
-using AuthenticationProperties = Microsoft.AspNetCore.Authentication.AuthenticationProperties;
 
 namespace SamlOida
 {
-    public class SamlHandler : RemoteAuthenticationHandler<SamlOptions>
+    public class SamlHandler : RemoteAuthenticationHandler<SamlOptions>, IAuthenticationSignOutHandler
     {
-        private readonly SamlBindingHandler _bindingHandler;
+        private readonly AuthnRequestHandler _authnRequestHandler;
+        private readonly AuthnResponseHandler _authnResponseHandler;
 
-        public SamlHandler(IOptionsMonitor<SamlOptions> options, IOptionsMonitor<SamlBindingOptions> bindingOptions, ILoggerFactory loggerFactory, UrlEncoder urlEncoder, ISystemClock clock) 
+        public SamlHandler(IOptionsMonitor<SamlOptions> options, ILoggerFactory loggerFactory, UrlEncoder urlEncoder, ISystemClock clock,
+            AuthnRequestHandler authnRequestHandler, AuthnResponseHandler authnResponseHandler)
             : base(options, loggerFactory, urlEncoder, clock)
         {
-            switch (bindingOptions.CurrentValue.BindingBehavior)
-            {
-                case SamlBindingBehavior.HttpRedirect:
-                    _bindingHandler = new HttpRedirectBindingHandler(bindingOptions.CurrentValue);
-                    break;
-                case SamlBindingBehavior.HttpPost:
-                    _bindingHandler = new HttpPostBindingHandler(bindingOptions.CurrentValue);
-                    break;
-                default:
-                    throw new ArgumentException(nameof(bindingOptions.CurrentValue.BindingBehavior));
-            }
+            _authnRequestHandler = authnRequestHandler ?? throw new ArgumentNullException(nameof(authnRequestHandler));
+            _authnResponseHandler = authnResponseHandler ?? throw new ArgumentNullException(nameof(authnResponseHandler));
+        }
+
+        public override Task<bool> ShouldHandleRequestAsync()
+        {
+            //TODO: Check if Check if IdP-Initiated Signout
+            //TODO: Check if SP-Initiated Callback
+            return base.ShouldHandleRequestAsync();
         }
 
         public override Task<bool> HandleRequestAsync()
         {
-            //TODO: Check if IdP-Initiated Signout
+            //TODO: Check if IdP-Initiated Signout, Instantiate IncomingLogoutRequestHandler
 
-            //TODO: Check if SP-Initiated Callback
+            //TODO: Check if SP-Initiated Callback, Instantiate IncomingLogoutResponseHandler
             return base.HandleRequestAsync();
         }
-        
+
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            var authnRequest = AuthnRequestBuilder.Build(Options.SamlBindingOptions.IdentityProviderSignOnUrl.ToString(), BuildRedirectUri(Options.CallbackPath), Options.ServiceProviderEntityId);
+            //TODO: properties.RedirectUri is null?
+            var context = new SamlAuthnRequestMessage
+            {
+                AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath),
+                Issuer = "Ich selber",
+                Destination = Options.IdentityProviderSignOnUrl.AbsoluteUri
+            };
+            _authnRequestHandler.Handle(Request.HttpContext, context, BuildRedirectUri(OriginalPath));
 
-            var encodedAuthnRequest = WebUtility.UrlEncode(Convert.ToBase64String(authnRequest.Deflate()));
-            return _bindingHandler.HandleAuthnRequestAsync(Response, encodedAuthnRequest, BuildRedirectUri(OriginalPath));
+            return Task.CompletedTask;
         }
 
         protected override Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
         {
+            //TODO: Instantiate AuthnResponseHandler
+            AuthnResultContext result;
+
             //Authenticate user based on SamlResponse
-            string samlResponse;
             var relaystate = BuildRedirectUri("/");
-
-            if (Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
-            {
-                if (string.IsNullOrEmpty(Request.Query[SamlDefaults.SamlResponseQueryStringKey]))
-                    throw new ArgumentException("SAMLResponse is empty");
-                samlResponse = Request.Query[SamlDefaults.SamlResponseQueryStringKey];
-
-                if (!string.IsNullOrEmpty(Request.Query[SamlDefaults.RelayStateQueryStringKey]))
-                    relaystate = Request.Query[SamlDefaults.RelayStateQueryStringKey];
-            }
-            else if (Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
-            {
-                if (string.IsNullOrEmpty(Request.Form[SamlDefaults.SamlResponseQueryStringKey]))
-                    throw new ArgumentException("SAMLResponse is empty");
-                samlResponse = Request.Form[SamlDefaults.SamlResponseQueryStringKey];
-
-                if (!string.IsNullOrEmpty(Request.Form[SamlDefaults.RelayStateQueryStringKey]))
-                    relaystate = Request.Form[SamlDefaults.RelayStateQueryStringKey];
-            }
-            else
-            {
-                throw new InvalidOperationException($"Request method {Request.Method} is not supported");
-            }
 
             //TODO: Check if RelayState references a local ressource (?)
 
-            XmlDocument doc;
             try
             {
-                var binarySamlReponse = Convert.FromBase64String(samlResponse);
-                doc = binarySamlReponse.ToXmlDocument();
-            }
-            catch (Exception ex)
-            {
-                return Task.FromResult(HandleRequestResult.Fail(ex));
-            }
-
-            ResponseParsingResult result;
-            try
-            {
-                var parser = new ResponseParser(doc, Options);
-                result = parser.Parse();
+                result = _authnResponseHandler.Handle(Request.HttpContext);
             }
             catch (ParsingException parseEx)
             {
@@ -108,17 +80,28 @@ namespace SamlOida
                 return Task.FromResult(HandleRequestResult.Fail(ex));
             }
 
-            //TODO: Make IdentityMapper replaceable to be able to e.g. map custom attributes
-            var claims = PvpIdentityMapper.Map(result);
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, SamlDefaults.AuthenticationScheme));
+            //TODO: Map Identity
+
+
+            //var claims = PvpIdentityMapper.Map(result);
+
+            //TODO: Insert mapped Identity
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>(), SamlAuthenticationDefaults.AuthenticationScheme));
 
             var props = new AuthenticationProperties
             {
                 RedirectUri = relaystate
             };
-            var authTicket = new AuthenticationTicket(principal, props, SamlDefaults.AuthenticationScheme);
+            var authTicket = new AuthenticationTicket(principal, props, SamlAuthenticationDefaults.AuthenticationScheme);
 
             return Task.FromResult(HandleRequestResult.Success(authTicket));
+        }
+
+        public Task SignOutAsync(AuthenticationProperties properties)
+        {
+            //TODO: Instantiate OutgoingLogoutRequestHandler
+
+            return Task.CompletedTask;
         }
     }
 }
