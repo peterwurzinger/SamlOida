@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SamlOida.Binding;
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using System.IO;
+using System.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SamlOida.Web
 {
@@ -14,6 +17,11 @@ namespace SamlOida.Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            var pw = new SecureString();
+            pw.AppendChar('t'); pw.AppendChar('e'); pw.AppendChar('s'); pw.AppendChar('t');
+            pw.MakeReadOnly();
+            var cer = new X509Certificate2(File.ReadAllBytes("spPrivateCertificate.pfx"), pw);
+
             services
                 .AddAuthentication(options =>
                 {
@@ -30,6 +38,9 @@ namespace SamlOida.Web
                     options.SingleSignOnBinding = SamlBindingBehavior.HttpRedirect;
                     options.IdentityProviderSignOnUrl = new Uri("https://capriza.github.io/samling/samling.html");
                     options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
+
+                    options.SignRequest = true;
+                    options.ServiceProviderCertificate = cer;
                 });
             services.AddMvc();
         }

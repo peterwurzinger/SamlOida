@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SamlOida.MessageHandler.Parser;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Xml;
 
 namespace SamlOida.MessageHandler
 {
-	public static class XmlExtensions
+    public static class XmlExtensions
 	{
 		public static byte[] Deflate(this XmlDocument document)
 		{
@@ -22,6 +23,16 @@ namespace SamlOida.MessageHandler
 			}
 			return binary;
 		}
+
+	    public static XmlNode RemoveSignature(this XmlDocument document)
+	    {
+	        var signatureNode = document.DocumentElement.SelectSingleNode($"{SamlAuthenticationDefaults.XmlSignatureNsPrefix}:Signature", SamlXmlExtensions.NamespaceManager);
+
+            if (signatureNode != null)
+                return document.DocumentElement.RemoveChild(signatureNode);
+
+            return null;
+	    }
 
 		public static XmlDocument ToXmlDocument(this byte[] binary, bool tryInflate = true)
 		{

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SamlOida.MessageHandler;
 using System;
-using System.Net;
+using System.IO;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Xml;
 
 namespace SamlOida.Binding
@@ -24,16 +25,23 @@ namespace SamlOida.Binding
 
         public void SendMessage(SamlOptions options, HttpContext context, XmlDocument message, Uri target, string relayState = null)
         {
-            var encodedMessage = EncodingHelper.EncodeMessage(message);
+            byte[] binaryMessage;
+            using (var stream = new MemoryStream())
+            {
+                message.Save(stream);
 
+                binaryMessage = stream.ToArray();
+            }
+            var encodedMessage = Convert.ToBase64String(binaryMessage);
+            
             var builder = new StringBuilder();
-            builder.Append($"<html><body><form action='{target.AbsoluteUri}'>");
+            builder.Append($"<html><body><form action='{target.AbsoluteUri}' method='POST'>");
 
             //TODO: Could also be SAMLResponse!
             builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.SamlRequestKey}' value='{encodedMessage}'/>");
 
             if (!string.IsNullOrEmpty(relayState))
-                builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.RelayStateKey}' value='{WebUtility.UrlEncode(relayState)}'/>");
+                builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.RelayStateKey}' value='{HtmlEncoder.Default.Encode(relayState)}'/>");
 
             builder.Append("<input type='submit' value='Send'/>");
             builder.Append("</form></body></html>");

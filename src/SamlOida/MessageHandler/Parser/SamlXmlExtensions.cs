@@ -20,7 +20,7 @@ namespace SamlOida.MessageHandler.Parser
                 _namespaceManager = new XmlNamespaceManager(new NameTable());
                 _namespaceManager.AddNamespace(SamlAuthenticationDefaults.SamlProtocolNsPrefix, SamlAuthenticationDefaults.SamlProtocolNamespace);
                 _namespaceManager.AddNamespace(SamlAuthenticationDefaults.SamlAssertionNsPrefix, SamlAuthenticationDefaults.SamlAssertionNamespace);
-                _namespaceManager.AddNamespace("ds", "http://www.w3.org/2000/09/xmldsig#");
+                _namespaceManager.AddNamespace(SamlAuthenticationDefaults.XmlSignatureNsPrefix, SamlAuthenticationDefaults.XmlDsigNamespace);
 
                 return _namespaceManager;
             }

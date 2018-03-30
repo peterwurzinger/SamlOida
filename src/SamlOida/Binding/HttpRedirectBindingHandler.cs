@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using SamlOida.MessageHandler;
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Xml;
 
 namespace SamlOida.Binding
@@ -25,20 +22,20 @@ namespace SamlOida.Binding
 
         public void SendMessage(SamlOptions options, HttpContext context, XmlDocument message, Uri target, string relayState = null)
         {
-            var encodedMessage = EncodingHelper.EncodeMessage(message);
+            //TODO: Obtain encoding to use from options?
+            var encoding = string.Empty;
+            if (string.IsNullOrEmpty(encoding))
+                encoding = SamlAuthenticationDefaults.DeflateEncoding;
+
             //TODO: Could also be SAMLResponse!
-            var dict = new Dictionary<string, string>
+            var queryString = EncodingHelper.EncodeMessage(options, encoding, message, SamlAuthenticationDefaults.SamlRequestKey, relayState);
+
+            var uriBuilder = new UriBuilder(target)
             {
-                { SamlAuthenticationDefaults.SamlRequestKey, encodedMessage }
+                Query = queryString.ToString()
             };
 
-            if (!string.IsNullOrEmpty(relayState))
-                dict.Add(SamlAuthenticationDefaults.RelayStateKey, WebUtility.UrlEncode(relayState));
-
-            var query = QueryHelpers.AddQueryString(target.AbsoluteUri, dict);
-
-
-            context.Response.Redirect(query);
+            context.Response.Redirect(uriBuilder.Uri.AbsoluteUri);
         }
     }
 }

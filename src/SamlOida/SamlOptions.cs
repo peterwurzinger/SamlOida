@@ -21,6 +21,8 @@ namespace SamlOida
 
         public bool AcceptSignedResponsesOnly { get; set; }
         public bool EncryptResponse { get; set; }
+
+        public bool SignRequest { get; set; }
         public bool SignResponse { get; set; }
     }
 }
