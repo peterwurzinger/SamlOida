@@ -11,7 +11,7 @@ namespace SamlOida.MessageHandler
     {
         private readonly IOptionsMonitor<SamlOptions> _options;
 
-        //TODO
+        //TODO: HttpPostBinding isn't always sufficient
         public AuthnResponseHandler(AuthnResponseParser messageParser, HttpPostBindingHandler binding, IOptionsMonitor<SamlOptions> options)
             : base(messageParser, binding)
         {
