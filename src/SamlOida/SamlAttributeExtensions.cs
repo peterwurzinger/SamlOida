@@ -12,7 +12,8 @@ namespace SamlOida
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
-            return attributes.SingleOrDefault(attr => key.Equals(attr.FriendlyName, StringComparison.OrdinalIgnoreCase));
+            return attributes.SingleOrDefault(attr => key.Equals(attr.FriendlyName, StringComparison.Ordinal))
+                ?? attributes.SingleOrDefault(attr => key.Equals(attr.Name, StringComparison.Ordinal));
         }
     }
 }
