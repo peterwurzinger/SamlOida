@@ -56,8 +56,7 @@ namespace SamlOida.Binding
                 }
 
 
-                var encodedSignature = Convert.ToBase64String(signature);
-                //TODO: URL-Encode? BASE64-Strings may contain "="
+                var encodedSignature = WebUtility.UrlEncode(Convert.ToBase64String(signature));
 
                 dict.Add(SamlAuthenticationDefaults.SignatureKey, encodedSignature);
             }
