@@ -14,7 +14,8 @@ namespace SamlOida.MessageHandler
         {
         }
 
-        protected internal override void Validate(SamlOptions options, SamlAuthnResponseMessage messageContext)
+        protected internal override void Validate(SamlOptions options, ExtractionResult extractionResult,
+            SamlAuthnResponseMessage messageContext)
         {
             if ((DateTime.UtcNow - messageContext.IssueInstant) > options.IssueInstantExpiration)
                 throw new SamlException("Issue instant is too long ago.");

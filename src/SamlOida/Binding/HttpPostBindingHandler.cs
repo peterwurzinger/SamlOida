@@ -10,7 +10,7 @@ namespace SamlOida.Binding
 {
     public class HttpPostBindingHandler : ISamlBindingStrategy
     {
-        public ExtractionResult ExtractMessage(SamlOptions options, HttpContext context)
+        public ExtractionResult ExtractMessage(HttpContext context)
         {
             //TODO: Could also be SAMLRequest!
             var encodedMessage = context.Request.Form[SamlAuthenticationDefaults.SamlResponseKey];

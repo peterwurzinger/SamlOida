@@ -19,7 +19,7 @@ namespace SamlOida.Binding
 
             throw new NotImplementedException();
         }
-
+        
         private static QueryString SamlDeflateEncoding(SamlOptions options, XmlDocument message, string samlFlowKey, string relayState)
         {
             //See https://docs.oasis-open.org/security/saml/v2.0/saml-bindings-2.0-os.pdf for details

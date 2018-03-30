@@ -55,7 +55,6 @@ namespace SamlOida
 
         protected override Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
         {
-            //TODO: Instantiate AuthnResponseHandler
             AuthnResultContext result;
 
             //Authenticate user based on SamlResponse
