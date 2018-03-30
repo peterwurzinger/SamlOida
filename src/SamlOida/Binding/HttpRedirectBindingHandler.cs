@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using SamlOida.MessageHandler;
 using System;
+using System.Security.Cryptography;
 using System.Xml;
 
 namespace SamlOida.Binding

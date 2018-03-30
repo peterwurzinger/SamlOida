@@ -8,7 +8,6 @@
 
         public const string SamlProtocolNamespace = "urn:oasis:names:tc:SAML:2.0:protocol";
         public const string SamlAssertionNamespace = "urn:oasis:names:tc:SAML:2.0:assertion";
-        public const string XmlDsigNamespace = "http://www.w3.org/2000/09/xmldsig#";
 
         public const string DeflateEncoding = "urn:oasis:names:tc:SAML:2.0:bindings:URL-Encoding:DEFLATE";
 

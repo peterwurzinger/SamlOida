@@ -1,6 +1,7 @@
 ﻿using SamlOida.Model;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.Xml;
 using System.Xml;
 
 namespace SamlOida.MessageHandler.Parser
@@ -20,7 +21,7 @@ namespace SamlOida.MessageHandler.Parser
                 _namespaceManager = new XmlNamespaceManager(new NameTable());
                 _namespaceManager.AddNamespace(SamlAuthenticationDefaults.SamlProtocolNsPrefix, SamlAuthenticationDefaults.SamlProtocolNamespace);
                 _namespaceManager.AddNamespace(SamlAuthenticationDefaults.SamlAssertionNsPrefix, SamlAuthenticationDefaults.SamlAssertionNamespace);
-                _namespaceManager.AddNamespace(SamlAuthenticationDefaults.XmlSignatureNsPrefix, SamlAuthenticationDefaults.XmlDsigNamespace);
+                _namespaceManager.AddNamespace(SamlAuthenticationDefaults.XmlSignatureNsPrefix, SignedXml.XmlDsigNamespaceUrl);
 
                 return _namespaceManager;
             }
