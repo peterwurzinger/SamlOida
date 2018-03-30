@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SamlOida.Binding;
 using SamlOida.MessageHandler.Parser;
+using SamlOida.Model;
 
 namespace SamlOida.MessageHandler
 {
     public abstract class IncomingSamlMessageHandler<THandlingResult, TMessageContext>
+        where TMessageContext : SamlMessage
     {
         protected internal ISamlMessageParser<TMessageContext> MessageParser { get; }
 

@@ -2,10 +2,12 @@
 using SamlOida.Binding;
 using SamlOida.MessageHandler.MessageFactory;
 using System;
+using SamlOida.Model;
 
 namespace SamlOida.MessageHandler
 {
     public abstract class OutgoingSamlMessageHandler<TMessageContext>
+        where TMessageContext : SamlMessage
     {
         protected internal ISamlMessageFactory<TMessageContext> MessageFactory { get; }
 
@@ -19,6 +21,8 @@ namespace SamlOida.MessageHandler
 
         public void Handle(SamlOptions options, HttpContext context, TMessageContext messageContext, Uri target, string relayState = null)
         {
+            //TODO: Extract creation and preparation of messageContext to a separate method.
+
             var document = MessageFactory.CreateMessage(options, messageContext);
 
             Binding.SendMessage(options, context, document, target, relayState);

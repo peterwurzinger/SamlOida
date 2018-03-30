@@ -1,11 +1,7 @@
 ﻿namespace SamlOida.Model
 {
-    public class SamlAuthnRequestMessage
+    public class SamlAuthnRequestMessage : SamlMessage
     {
-        internal string Destination { get; set; }
-
         internal string AssertionConsumerServiceUrl { get; set; }
-
-        internal string Issuer { get; set; }
     }
 }

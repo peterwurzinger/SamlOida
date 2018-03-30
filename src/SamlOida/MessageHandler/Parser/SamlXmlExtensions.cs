@@ -1,6 +1,7 @@
 ﻿using SamlOida.Model;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
@@ -25,6 +26,27 @@ namespace SamlOida.MessageHandler.Parser
 
                 return _namespaceManager;
             }
+        }
+
+        internal static void PropagateStandardElements(XmlDocument doc, XmlElement element, SamlMessage message)
+        {
+            element.SetAttribute($"xmlns:{SamlAuthenticationDefaults.SamlAssertionNsPrefix}", SamlAuthenticationDefaults.SamlAssertionNamespace);
+            element.SetAttribute($"xmlns:{SamlAuthenticationDefaults.SamlProtocolNsPrefix}", SamlAuthenticationDefaults.SamlProtocolNamespace);
+
+            //TODO: Use something else than Guid.NewGuid ?
+            element.SetAttribute("ID", $"Issuer_{Guid.NewGuid()}");
+            element.SetAttribute("Version", "2.0");
+
+            //Does the Standardportal differ from SAML-Standard?
+            element.SetAttribute("IssueInstant", DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture));
+
+            element.SetAttribute("Destination", message.Destination);
+
+            var issuerElement = doc.CreateElement(SamlAuthenticationDefaults.SamlAssertionNsPrefix, "Issuer", SamlAuthenticationDefaults.SamlAssertionNamespace);
+            issuerElement.InnerText = message.Issuer;
+
+            element.AppendChild(issuerElement);
+
         }
 
         internal static IEnumerable<SamlAssertion> ParseAssertions(XmlNode responseNode)
