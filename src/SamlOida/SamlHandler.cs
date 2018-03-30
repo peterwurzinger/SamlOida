@@ -49,7 +49,7 @@ namespace SamlOida
                 Issuer = "Ich selber",
                 Destination = Options.IdentityProviderSignOnUrl.AbsoluteUri
             };
-            _authnRequestHandler.Handle(Request.HttpContext, context, BuildRedirectUri(OriginalPath));
+            _authnRequestHandler.Handle(Request.HttpContext, context, Options.IdentityProviderSignOnUrl, BuildRedirectUri(OriginalPath));
 
             return Task.CompletedTask;
         }

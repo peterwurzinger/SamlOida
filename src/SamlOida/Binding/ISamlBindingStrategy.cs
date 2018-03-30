@@ -1,5 +1,6 @@
-﻿using System.Xml;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Xml;
 
 namespace SamlOida.Binding
 {
@@ -7,7 +8,7 @@ namespace SamlOida.Binding
     {
         ExtractionResult ExtractMessage(HttpContext context);
 
-        void SendMessage(HttpContext context, XmlDocument message, string relayState = null);
+        void SendMessage(HttpContext context, XmlDocument message, Uri target, string relayState = null);
     }
 
     public class ExtractionResult

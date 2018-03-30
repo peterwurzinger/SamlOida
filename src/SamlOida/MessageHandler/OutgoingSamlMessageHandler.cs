@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SamlOida.Binding;
 using SamlOida.MessageHandler.MessageFactory;
+using System;
 
 namespace SamlOida.MessageHandler
 {
@@ -16,11 +17,11 @@ namespace SamlOida.MessageHandler
             Binding = binding;
         }
 
-        public void Handle(HttpContext context, TMessageContext messageContext, string relayState = null)
+        public void Handle(HttpContext context, TMessageContext messageContext, Uri target, string relayState = null)
         {
             var document = MessageFactory.CreateMessage(messageContext);
 
-            Binding.SendMessage(context, document, relayState);
+            Binding.SendMessage(context, document, target, relayState);
         }
     }
 }

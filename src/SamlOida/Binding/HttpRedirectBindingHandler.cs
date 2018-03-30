@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using SamlOida.MessageHandler;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Xml;
-using Microsoft.Extensions.Options;
 
 namespace SamlOida.Binding
 {
@@ -31,9 +31,10 @@ namespace SamlOida.Binding
             };
         }
 
-        public void SendMessage(HttpContext context, XmlDocument message, string relayState = null)
+        public void SendMessage(HttpContext context, XmlDocument message, Uri target, string relayState = null)
         {
             var encodedMessage = EncodingHelper.EncodeMessage(message);
+            //TODO: Could also be SAMLResponse!
             var dict = new Dictionary<string, string>
             {
                 { SamlAuthenticationDefaults.SamlRequestKey, encodedMessage }
@@ -42,8 +43,7 @@ namespace SamlOida.Binding
             if (!string.IsNullOrEmpty(relayState))
                 dict.Add(SamlAuthenticationDefaults.RelayStateKey, WebUtility.UrlEncode(relayState));
 
-            //TODO: Extract IdP-SignonUrl!
-            var query = QueryHelpers.AddQueryString(_samloptions.Value.IdentityProviderSignOnUrl.ToString(), dict);
+            var query = QueryHelpers.AddQueryString(target.AbsoluteUri, dict);
 
 
             context.Response.Redirect(query);

@@ -17,26 +17,6 @@ namespace SamlOida.Binding
             _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
         }
 
-        public void SendMessage(HttpContext context, XmlDocument message, string relayState = null)
-        {
-            var encodedMessage = EncodingHelper.EncodeMessage(message);
-
-            var builder = new StringBuilder();
-            //TODO: Extract IdP-SignonUrl!
-            builder.Append($"<html><body><form action='{_optionsMonitor.Value.IdentityProviderSignOnUrl}'>");
-
-            builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.SamlRequestKey}' value='{encodedMessage}'/>");
-
-            if (!string.IsNullOrEmpty(relayState))
-                builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.RelayStateKey}' value='{WebUtility.UrlEncode(relayState)}'/>");
-
-            builder.Append("<input type='submit' value='Send'/>");
-            builder.Append("</form></body></html>");
-
-            context.Response.ContentType = "text/html";
-            context.Response.WriteAsync(builder.ToString());
-        }
-
         public ExtractionResult ExtractMessage(HttpContext context)
         {
             //TODO: Could also be SAMLRequest!
@@ -48,6 +28,26 @@ namespace SamlOida.Binding
                 Message = binaryMessage.ToXmlDocument(),
                 RelayState = context.Request.Form[SamlAuthenticationDefaults.RelayStateKey]
             };
+        }
+
+        public void SendMessage(HttpContext context, XmlDocument message, Uri target, string relayState = null)
+        {
+            var encodedMessage = EncodingHelper.EncodeMessage(message);
+
+            var builder = new StringBuilder();
+            builder.Append($"<html><body><form action='{target.AbsoluteUri}'>");
+
+            //TODO: Could also be SAMLResponse!
+            builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.SamlRequestKey}' value='{encodedMessage}'/>");
+
+            if (!string.IsNullOrEmpty(relayState))
+                builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.RelayStateKey}' value='{WebUtility.UrlEncode(relayState)}'/>");
+
+            builder.Append("<input type='submit' value='Send'/>");
+            builder.Append("</form></body></html>");
+
+            context.Response.ContentType = "text/html";
+            context.Response.WriteAsync(builder.ToString());
         }
     }
 }
