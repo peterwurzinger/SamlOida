@@ -6,7 +6,7 @@ namespace SamlOida
     {
         public void PostConfigure(string name, SamlOptions options)
         {
-            //TODO
+            //TODO do the post-configure dance
         }
     }
 }

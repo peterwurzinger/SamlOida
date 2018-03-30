@@ -26,15 +26,15 @@ namespace SamlOida.MessageHandler
 
         protected internal override AuthnResultContext HandleInternal(HttpContext httpContext, SamlAuthnResponseMessage messageContext)
         {
+            //TODO: Handle the Response-Message
             return new AuthnResultContext
             {
-                //TODO
             };
         }
     }
 
     public class AuthnResultContext
     {
-        //TODO:
+        //TODO: Needed?
     }
 }

@@ -42,7 +42,6 @@ namespace SamlOida
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            //TODO: properties.RedirectUri is null?
             var context = new SamlAuthnRequestMessage
             {
                 AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath),
