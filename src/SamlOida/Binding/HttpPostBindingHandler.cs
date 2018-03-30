@@ -2,12 +2,13 @@
 using Microsoft.Extensions.Options;
 using SamlOida.MessageHandler;
 using System;
+using System.Net;
 using System.Text;
 using System.Xml;
 
 namespace SamlOida.Binding
 {
-    public class HttpPostBindingHandler :  ISamlBindingStrategy
+    public class HttpPostBindingHandler : ISamlBindingStrategy
     {
         private readonly IOptions<SamlOptions> _optionsMonitor;
 
@@ -27,7 +28,7 @@ namespace SamlOida.Binding
             builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.SamlRequestKey}' value='{encodedMessage}'/>");
 
             if (!string.IsNullOrEmpty(relayState))
-                builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.RelayStateKey}' value='{relayState}'/>");
+                builder.Append($"<input type='hidden' name='{SamlAuthenticationDefaults.RelayStateKey}' value='{WebUtility.UrlEncode(relayState)}'/>");
 
             builder.Append("<input type='submit' value='Send'/>");
             builder.Append("</form></body></html>");
