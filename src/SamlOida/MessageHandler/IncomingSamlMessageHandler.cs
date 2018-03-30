@@ -16,19 +16,19 @@ namespace SamlOida.MessageHandler
             Binding = binding;
         }
 
-        public THandlingResult Handle(HttpContext context)
+        public THandlingResult Handle(SamlOptions options, HttpContext context)
         {
-            var result = Binding.ExtractMessage(context);
+            var result = Binding.ExtractMessage(options, context);
 
             var messageContext = MessageParser.Parse(result.Message);
 
-            Validate(messageContext);
+            Validate(options, messageContext);
 
-            return HandleInternal(context, messageContext);
+            return HandleInternal(options, context, messageContext);
         }
 
-        protected internal virtual void Validate(TMessageContext messageContext) { }
+        protected internal virtual void Validate(SamlOptions options,  TMessageContext messageContext) { }
 
-        protected internal abstract THandlingResult HandleInternal(HttpContext httpContext, TMessageContext messageContext);
+        protected internal abstract THandlingResult HandleInternal(SamlOptions options, HttpContext httpContext, TMessageContext messageContext);
     }
 }

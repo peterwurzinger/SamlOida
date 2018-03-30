@@ -17,11 +17,11 @@ namespace SamlOida.MessageHandler
             Binding = binding;
         }
 
-        public void Handle(HttpContext context, TMessageContext messageContext, Uri target, string relayState = null)
+        public void Handle(SamlOptions options, HttpContext context, TMessageContext messageContext, Uri target, string relayState = null)
         {
-            var document = MessageFactory.CreateMessage(messageContext);
+            var document = MessageFactory.CreateMessage(options, messageContext);
 
-            Binding.SendMessage(context, document, target, relayState);
+            Binding.SendMessage(options, context, document, target, relayState);
         }
     }
 }

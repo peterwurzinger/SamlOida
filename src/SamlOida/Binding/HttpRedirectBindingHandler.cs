@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using SamlOida.MessageHandler;
 using System;
 using System.Collections.Generic;
@@ -11,14 +10,7 @@ namespace SamlOida.Binding
 {
     public class HttpRedirectBindingHandler : ISamlBindingStrategy
     {
-        private readonly IOptions<SamlOptions> _samloptions;
-
-        public HttpRedirectBindingHandler(IOptions<SamlOptions> samloptions)
-        {
-            _samloptions = samloptions ?? throw new ArgumentNullException(nameof(samloptions));
-        }
-
-        public ExtractionResult ExtractMessage(HttpContext context)
+        public ExtractionResult ExtractMessage(SamlOptions options, HttpContext context)
         {
             //TODO: Could also be SAMLResponse
             var encodedMessage = context.Request.Query[SamlAuthenticationDefaults.SamlRequestKey];
@@ -31,7 +23,7 @@ namespace SamlOida.Binding
             };
         }
 
-        public void SendMessage(HttpContext context, XmlDocument message, Uri target, string relayState = null)
+        public void SendMessage(SamlOptions options, HttpContext context, XmlDocument message, Uri target, string relayState = null)
         {
             var encodedMessage = EncodingHelper.EncodeMessage(message);
             //TODO: Could also be SAMLResponse!

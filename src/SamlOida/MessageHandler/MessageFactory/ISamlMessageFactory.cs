@@ -4,6 +4,6 @@ namespace SamlOida.MessageHandler.MessageFactory
 {
     public interface ISamlMessageFactory<in TMessageContext>
     {
-        XmlDocument CreateMessage(TMessageContext messageContext);
+        XmlDocument CreateMessage(SamlOptions options, TMessageContext messageContext);
     }
 }

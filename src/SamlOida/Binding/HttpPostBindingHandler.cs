@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using SamlOida.MessageHandler;
 using System;
 using System.Net;
@@ -10,14 +9,7 @@ namespace SamlOida.Binding
 {
     public class HttpPostBindingHandler : ISamlBindingStrategy
     {
-        private readonly IOptions<SamlOptions> _optionsMonitor;
-
-        public HttpPostBindingHandler(IOptions<SamlOptions> optionsMonitor)
-        {
-            _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
-        }
-
-        public ExtractionResult ExtractMessage(HttpContext context)
+        public ExtractionResult ExtractMessage(SamlOptions options, HttpContext context)
         {
             //TODO: Could also be SAMLRequest!
             var encodedMessage = context.Request.Form[SamlAuthenticationDefaults.SamlResponseKey];
@@ -30,7 +22,7 @@ namespace SamlOida.Binding
             };
         }
 
-        public void SendMessage(HttpContext context, XmlDocument message, Uri target, string relayState = null)
+        public void SendMessage(SamlOptions options, HttpContext context, XmlDocument message, Uri target, string relayState = null)
         {
             var encodedMessage = EncodingHelper.EncodeMessage(message);
 

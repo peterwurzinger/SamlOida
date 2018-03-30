@@ -48,7 +48,7 @@ namespace SamlOida
                 Issuer = "Ich selber",
                 Destination = Options.IdentityProviderSignOnUrl.AbsoluteUri
             };
-            _authnRequestHandler.Handle(Request.HttpContext, context, Options.IdentityProviderSignOnUrl, BuildRedirectUri(OriginalPath));
+            _authnRequestHandler.Handle(Options, Request.HttpContext, context, Options.IdentityProviderSignOnUrl, BuildRedirectUri(OriginalPath));
 
             return Task.CompletedTask;
         }
@@ -65,7 +65,7 @@ namespace SamlOida
 
             try
             {
-                result = _authnResponseHandler.Handle(Request.HttpContext);
+                result = _authnResponseHandler.Handle(Options, Request.HttpContext);
             }
             catch (ParsingException parseEx)
             {

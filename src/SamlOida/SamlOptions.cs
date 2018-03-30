@@ -22,13 +22,5 @@ namespace SamlOida
         public bool AcceptSignedResponsesOnly { get; set; }
         public bool EncryptResponse { get; set; }
         public bool SignResponse { get; set; }
-
-        public SamlOptions()
-        {
-            CallbackPath = "/saml-auth";
-            SingleSignOnBinding = SamlBindingBehavior.HttpRedirect;
-            IdentityProviderSignOnUrl = new Uri("https://capriza.github.io/samling/samling.html");
-            IssueInstantExpiration = TimeSpan.FromMinutes(20);
-        }
     }
 }

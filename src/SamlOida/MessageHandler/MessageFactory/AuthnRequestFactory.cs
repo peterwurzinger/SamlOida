@@ -7,7 +7,7 @@ namespace SamlOida.MessageHandler.MessageFactory
 {
     public class AuthnRequestFactory : ISamlMessageFactory<SamlAuthnRequestMessage>
     {
-        public XmlDocument CreateMessage(SamlAuthnRequestMessage messageRequestMessage)
+        public XmlDocument CreateMessage(SamlOptions options, SamlAuthnRequestMessage messageRequestMessage)
         {
             var doc = new XmlDocument();
 

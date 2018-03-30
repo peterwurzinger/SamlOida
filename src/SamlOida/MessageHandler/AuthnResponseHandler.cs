@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using SamlOida.Binding;
 using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
@@ -9,22 +8,19 @@ namespace SamlOida.MessageHandler
 {
     public class AuthnResponseHandler : IncomingSamlMessageHandler<AuthnResultContext, SamlAuthnResponseMessage>
     {
-        private readonly IOptionsMonitor<SamlOptions> _options;
-
         //TODO: HttpPostBinding isn't always sufficient
-        public AuthnResponseHandler(AuthnResponseParser messageParser, HttpPostBindingHandler binding, IOptionsMonitor<SamlOptions> options)
+        public AuthnResponseHandler(AuthnResponseParser messageParser, HttpPostBindingHandler binding)
             : base(messageParser, binding)
         {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        protected internal override void Validate(SamlAuthnResponseMessage messageContext)
+        protected internal override void Validate(SamlOptions options, SamlAuthnResponseMessage messageContext)
         {
-            if ((DateTime.UtcNow - messageContext.IssueInstant) > _options.CurrentValue.IssueInstantExpiration)
+            if ((DateTime.UtcNow - messageContext.IssueInstant) > options.IssueInstantExpiration)
                 throw new SamlException("Issue instant is too long ago.");
         }
 
-        protected internal override AuthnResultContext HandleInternal(HttpContext httpContext, SamlAuthnResponseMessage messageContext)
+        protected internal override AuthnResultContext HandleInternal(SamlOptions options, HttpContext httpContext, SamlAuthnResponseMessage messageContext)
         {
             //TODO: Handle the Response-Message
             return new AuthnResultContext
