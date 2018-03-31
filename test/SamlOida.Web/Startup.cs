@@ -39,6 +39,8 @@ namespace SamlOida.Web
                     options.IdentityProviderSignOnUrl = new Uri("https://capriza.github.io/samling/samling.html");
                     options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
 
+
+                    options.AcceptSignedMessagesOnly = false;
                     options.SignOutgoingMessages = true;
                     options.ServiceProviderCertificate = cer;
                 });

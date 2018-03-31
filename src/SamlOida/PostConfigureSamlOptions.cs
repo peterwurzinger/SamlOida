@@ -6,9 +6,9 @@ namespace SamlOida
 {
     public class PostConfigureSamlOptions : IPostConfigureOptions<SamlOptions>
     {
-        private readonly ILogger<IPostConfigureOptions<SamlOptions>> _logger;
+        private readonly ILogger<PostConfigureSamlOptions> _logger;
 
-        public PostConfigureSamlOptions(ILogger<IPostConfigureOptions<SamlOptions>> logger)
+        public PostConfigureSamlOptions(ILogger<PostConfigureSamlOptions> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
