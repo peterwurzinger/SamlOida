@@ -45,14 +45,14 @@ namespace SamlOida.Binding
                 if (!string.IsNullOrEmpty(relayState))
                     stringBuilder.Append($"&{SamlAuthenticationDefaults.RelayStateKey}={dict[SamlAuthenticationDefaults.RelayStateKey]}");
 
-                dict.Add(SamlAuthenticationDefaults.SignatureAlgorithmKey, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
+                dict.Add(SamlAuthenticationDefaults.SignatureAlgorithmKey, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
                 stringBuilder.Append($"&{SamlAuthenticationDefaults.SignatureAlgorithmKey}={dict[SamlAuthenticationDefaults.SignatureAlgorithmKey]}");
 
                 using (var rsa = options.ServiceProviderCertificate.GetRSAPrivateKey())
                 {
                     var signatureData = Encoding.UTF8.GetBytes(stringBuilder.ToString());
 
-                    signature = rsa.SignData(signatureData, HashAlgorithmName.SHA1, RSASignaturePadding.Pkcs1);
+                    signature = rsa.SignData(signatureData, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                 }
 
 
