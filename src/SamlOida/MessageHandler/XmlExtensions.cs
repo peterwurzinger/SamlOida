@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Security.Cryptography.Xml;
 using System.Xml;
 
 namespace SamlOida.MessageHandler
@@ -23,6 +24,23 @@ namespace SamlOida.MessageHandler
 			}
 			return binary;
 		}
+
+	    public static void SignDocument(XmlDocument doc, SamlOptions options)
+	    {
+	        var signedXml = new SignedXml(doc)
+	        {
+	            SigningKey = options.ServiceProviderCertificate.PrivateKey
+	        };
+	        var reference = new Reference("");
+	        var env = new XmlDsigEnvelopedSignatureTransform();
+	        reference.AddTransform(env);
+
+	        signedXml.AddReference(reference);
+	        signedXml.ComputeSignature();
+	        var signature = signedXml.GetXml();
+            
+	        doc.DocumentElement.AppendChild(doc.ImportNode(signature, true));
+        }
 
 	    public static XmlNode RemoveSignature(this XmlDocument document)
 	    {

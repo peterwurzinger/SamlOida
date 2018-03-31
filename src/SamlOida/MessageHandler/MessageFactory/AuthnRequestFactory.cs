@@ -18,24 +18,9 @@ namespace SamlOida.MessageHandler.MessageFactory
             authnRequestElement.SetAttribute("AssertionConsumerServiceURL", authnRequestMessage.AssertionConsumerServiceUrl);
 
             doc.AppendChild(authnRequestElement);
-
-            //TODO: Extract this?
-            if (options.SignRequest)
-            {
-                var signedXml = new SignedXml(doc)
-                {
-                    SigningKey = options.ServiceProviderCertificate.PrivateKey
-                };
-                var reference = new Reference("");
-                var env = new XmlDsigEnvelopedSignatureTransform();
-                reference.AddTransform(env);
-
-                signedXml.AddReference(reference);
-                signedXml.ComputeSignature();
-                var signature = signedXml.GetXml();
-
-                doc.DocumentElement.AppendChild(doc.ImportNode(signature, true));
-            }
+            
+            if (options.SignOutgoingMessages)
+                XmlExtensions.SignDocument(doc, options);
 
             return doc;
         }

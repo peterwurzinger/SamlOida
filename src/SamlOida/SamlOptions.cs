@@ -8,21 +8,22 @@ namespace SamlOida
     public class SamlOptions : RemoteAuthenticationOptions
     {
         public X509Certificate2 IdentityProviderCertificate { get; set; }
-
-        //Warn on presence of private key
         public X509Certificate2 ServiceProviderCertificate { get; set; }
         public Uri IdentityProviderSignOnUrl { get; set; }
-
         public Uri IdentityProviderSignOutUrl { get; set; }
-        public SamlBindingBehavior SingleSignOnBinding { get; set; }
+        public SamlBindingBehavior AuthnRequestBinding { get; set; }
+        public SamlBindingBehavior LogoutRequestBinding { get; set; }
+        public SamlBindingBehavior LogoutResponseBinding { get; set; }
         public TimeSpan IssueInstantExpiration { get; set; }
-
         public bool AcceptSignedAssertionsOnly { get; set; }
+        public bool AcceptSignedMessagesOnly { get; set; }
+        public bool SignOutgoingMessages { get; set; }
 
-        public bool AcceptSignedResponsesOnly { get; set; }
-        public bool EncryptResponse { get; set; }
+        public SamlOptions()
+        {
+            SignOutgoingMessages = true;
+            AcceptSignedMessagesOnly = true;
+        }
 
-        public bool SignRequest { get; set; }
-        public bool SignResponse { get; set; }
     }
 }

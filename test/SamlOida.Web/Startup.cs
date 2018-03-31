@@ -35,11 +35,11 @@ namespace SamlOida.Web
                 .AddSaml(options =>
                 {
                     options.CallbackPath = "/saml-auth";
-                    options.SingleSignOnBinding = SamlBindingBehavior.HttpRedirect;
+                    options.AuthnRequestBinding = SamlBindingBehavior.HttpRedirect;
                     options.IdentityProviderSignOnUrl = new Uri("https://capriza.github.io/samling/samling.html");
                     options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
 
-                    options.SignRequest = true;
+                    options.SignOutgoingMessages = true;
                     options.ServiceProviderCertificate = cer;
                 });
             services.AddMvc();

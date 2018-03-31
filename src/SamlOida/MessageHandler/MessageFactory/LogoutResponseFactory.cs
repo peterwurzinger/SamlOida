@@ -26,6 +26,9 @@ namespace SamlOida.MessageHandler.MessageFactory
             logoutResponseElement.AppendChild(statusElement);
             doc.AppendChild(logoutResponseElement);
 
+            if (options.SignOutgoingMessages)
+                XmlExtensions.SignDocument(doc, options);
+
             return doc;
         }
     }
