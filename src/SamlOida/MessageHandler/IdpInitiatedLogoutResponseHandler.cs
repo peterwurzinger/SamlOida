@@ -6,10 +6,11 @@ namespace SamlOida.MessageHandler
 {
     public class IdpInitiatedLogoutResponseHandler : OutgoingSamlMessageHandler<SamlLogoutResponseMessage>
     {
-        public IdpInitiatedLogoutResponseHandler(ISamlMessageFactory<SamlLogoutResponseMessage> messageFactory, ISamlBindingStrategy binding) : base(messageFactory, binding)
+        //TODO: Binding
+        public IdpInitiatedLogoutResponseHandler(LogoutResponseFactory messageFactory, HttpPostBindingHandler binding) : base(messageFactory, binding)
         {
         }
 
-        //TODO
+        //TODO: Implement
     }
 }

@@ -39,6 +39,8 @@ namespace SamlOida.Web
                     options.IdentityProviderSignOnUrl = new Uri("https://capriza.github.io/samling/samling.html");
                     options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
 
+                    options.SignoutCallbackPath = "/saml-spSignoutCallback";
+                    options.SignoutPath = "/saml-idpSignout";
 
                     options.AcceptSignedMessagesOnly = false;
                     options.SignOutgoingMessages = true;
@@ -51,6 +53,7 @@ namespace SamlOida.Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             //loggerFactory.AddConsole();
+            app.UseDeveloperExceptionPage();
 
             app.UseAuthentication();
 

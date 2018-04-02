@@ -28,13 +28,21 @@ namespace SamlOida
 
             builder.Services.AddSingleton<AuthnRequestHandler>();
             builder.Services.AddSingleton<AuthnResponseHandler>();
+            builder.Services.AddSingleton<IdpInitiatedLogoutResponseHandler>();
+            builder.Services.AddSingleton<IdpInitiatedLogoutRequestHandler>();
+            builder.Services.AddSingleton<SpInitiatedLogoutRequestHandler>();
+            builder.Services.AddSingleton<SpInitiatedLogoutResponseHandler>();
 
             builder.Services.AddSingleton<HttpPostBindingHandler>();
             builder.Services.AddSingleton<HttpRedirectBindingHandler>();
 
             builder.Services.AddSingleton<AuthnRequestFactory>();
+            builder.Services.AddSingleton<LogoutRequestFactory>();
+            builder.Services.AddSingleton<LogoutResponseFactory>();
 
             builder.Services.AddSingleton<AuthnResponseParser>();
+            builder.Services.AddSingleton<LogoutRequestParser>();
+            builder.Services.AddSingleton<LogoutResponseParser>();
 
             return builder.AddRemoteScheme<SamlOptions, SamlHandler>(authenticationScheme, displayName, configureOptions);
         }

@@ -8,7 +8,8 @@ namespace SamlOida.MessageHandler
 {
     public class SpInitiatedLogoutResponseHandler : IncomingSamlMessageHandler<object, SamlLogoutResponseMessage>
     {
-        public SpInitiatedLogoutResponseHandler(ISamlMessageParser<SamlLogoutResponseMessage> messageParser, ISamlBindingStrategy binding) : base(messageParser, binding)
+        //TODO: Binding
+        public SpInitiatedLogoutResponseHandler(LogoutResponseParser messageParser, HttpPostBindingHandler binding) : base(messageParser, binding)
         {
         }
 

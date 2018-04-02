@@ -6,13 +6,14 @@ using System;
 
 namespace SamlOida.MessageHandler
 {
-    public class IdpInitiatedLogoutRequestHandler : IncomingSamlMessageHandler<object, SamlLogoutRequestMessage>
+    public class IdpInitiatedLogoutRequestHandler : IncomingSamlMessageHandler<SamlLogoutResponseMessage, SamlLogoutRequestMessage>
     {
-        public IdpInitiatedLogoutRequestHandler(ISamlMessageParser<SamlLogoutRequestMessage> messageParser, ISamlBindingStrategy binding) : base(messageParser, binding)
+        //TODO: Binding
+        public IdpInitiatedLogoutRequestHandler(LogoutRequestParser messageParser, HttpRedirectBindingHandler binding) : base(messageParser, binding)
         {
         }
 
-        protected internal override object HandleInternal(SamlOptions options, HttpContext httpContext, SamlLogoutRequestMessage messageContext)
+        protected internal override SamlLogoutResponseMessage HandleInternal(SamlOptions options, HttpContext httpContext, SamlLogoutRequestMessage messageContext)
         {
             throw new NotImplementedException();
         }

@@ -5,7 +5,6 @@ using SamlOida.MessageHandler;
 using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
 using System;
-using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
@@ -15,27 +14,42 @@ namespace SamlOida
     {
         private readonly AuthnRequestHandler _authnRequestHandler;
         private readonly AuthnResponseHandler _authnResponseHandler;
+        private readonly SpInitiatedLogoutRequestHandler _spInitiatedLogoutRequestHandler;
+        private readonly SpInitiatedLogoutResponseHandler _spInitiatedLogoutResponseHandler;
+        private readonly IdpInitiatedLogoutRequestHandler _idpInitiatedLogoutRequestHandler;
+        private readonly IdpInitiatedLogoutResponseHandler _idpInitiatedLogoutResponseHandler;
 
         public SamlHandler(IOptionsMonitor<SamlOptions> options, ILoggerFactory loggerFactory, UrlEncoder urlEncoder, ISystemClock clock,
-            AuthnRequestHandler authnRequestHandler, AuthnResponseHandler authnResponseHandler)
+            AuthnRequestHandler authnRequestHandler, AuthnResponseHandler authnResponseHandler,
+            SpInitiatedLogoutRequestHandler spInitiatedLogoutRequestHandler, SpInitiatedLogoutResponseHandler spInitiatedLogoutResponseHandler,
+            IdpInitiatedLogoutRequestHandler idpInitiatedLogoutRequestHandler, IdpInitiatedLogoutResponseHandler idpInitiatedLogoutResponseHandler)
             : base(options, loggerFactory, urlEncoder, clock)
         {
             _authnRequestHandler = authnRequestHandler ?? throw new ArgumentNullException(nameof(authnRequestHandler));
             _authnResponseHandler = authnResponseHandler ?? throw new ArgumentNullException(nameof(authnResponseHandler));
-        }
-
-        public override Task<bool> ShouldHandleRequestAsync()
-        {
-            //TODO: Check if Check if IdP-Initiated Signout
-            //TODO: Check if SP-Initiated Callback
-            return base.ShouldHandleRequestAsync();
+            _spInitiatedLogoutRequestHandler = spInitiatedLogoutRequestHandler ?? throw new ArgumentNullException(nameof(spInitiatedLogoutRequestHandler));
+            _spInitiatedLogoutResponseHandler = spInitiatedLogoutResponseHandler ?? throw new ArgumentNullException(nameof(spInitiatedLogoutResponseHandler));
+            _idpInitiatedLogoutRequestHandler = idpInitiatedLogoutRequestHandler ?? throw new ArgumentNullException(nameof(idpInitiatedLogoutRequestHandler));
+            _idpInitiatedLogoutResponseHandler = idpInitiatedLogoutResponseHandler ?? throw new ArgumentNullException(nameof(idpInitiatedLogoutResponseHandler));
         }
 
         public override Task<bool> HandleRequestAsync()
         {
-            //TODO: Check if IdP-Initiated Signout, Instantiate IncomingLogoutRequestHandler
+            //Callback to SpInitiatedSignout
+            if (Options.SignoutCallbackPath == Request.Path)
+            {
+                _spInitiatedLogoutResponseHandler.Handle(Options, Context);
+                return Task.FromResult(true);
+            }
 
-            //TODO: Check if SP-Initiated Callback, Instantiate IncomingLogoutResponseHandler
+            //IdpInitiatedSignout
+            if (Options.SignoutPath == Request.Path)
+            {
+                var responseMessage =  _idpInitiatedLogoutRequestHandler.Handle(Options, Context);
+                _idpInitiatedLogoutResponseHandler.Handle(Options, Context, responseMessage, Options.IdentityProviderSignOnUrl);
+                return Task.FromResult(true);
+            }
+
             return base.HandleRequestAsync();
         }
 
@@ -55,16 +69,12 @@ namespace SamlOida
 
         protected override Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
         {
-            AuthnResultContext result;
-
             //Authenticate user based on SamlResponse
             var relaystate = BuildRedirectUri("/");
 
-            //TODO: Check if RelayState references a local ressource (?)
-
             try
             {
-                result = _authnResponseHandler.Handle(Options, Request.HttpContext);
+                return Task.FromResult(_authnResponseHandler.Handle(Options, Request.HttpContext));
             }
             catch (ParsingException parseEx)
             {
@@ -78,26 +88,11 @@ namespace SamlOida
                 return Task.FromResult(HandleRequestResult.Fail(ex));
             }
 
-            //TODO: Map Identity
-
-
-            //var claims = PvpIdentityMapper.Map(result);
-
-            //TODO: Insert mapped Identity
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>(), SamlAuthenticationDefaults.AuthenticationScheme));
-
-            var props = new AuthenticationProperties
-            {
-                RedirectUri = relaystate
-            };
-            var authTicket = new AuthenticationTicket(principal, props, SamlAuthenticationDefaults.AuthenticationScheme);
-
-            return Task.FromResult(HandleRequestResult.Success(authTicket));
         }
 
         public Task SignOutAsync(AuthenticationProperties properties)
         {
-            //TODO: Instantiate OutgoingLogoutRequestHandler
+            _spInitiatedLogoutRequestHandler.Handle(Options, Context, new SamlLogoutRequestMessage(), Options.IdentityProviderSignOutUrl, Context.Request.Path);
 
             return Task.CompletedTask;
         }

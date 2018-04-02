@@ -2,6 +2,7 @@
 using SamlOida.Binding;
 using System;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Http;
 
 namespace SamlOida
 {
@@ -11,6 +12,16 @@ namespace SamlOida
         public X509Certificate2 ServiceProviderCertificate { get; set; }
         public Uri IdentityProviderSignOnUrl { get; set; }
         public Uri IdentityProviderSignOutUrl { get; set; }
+
+        /// <summary>
+        /// Used for Logout Responses on SP initiated logouts
+        /// </summary>
+        public PathString SignoutCallbackPath { get; set; }
+
+        /// <summary>
+        /// Used for IdP initiated logouts
+        /// </summary>
+        public PathString SignoutPath { get; set; }
         public SamlBindingBehavior AuthnRequestBinding { get; set; }
         public SamlBindingBehavior LogoutRequestBinding { get; set; }
         public SamlBindingBehavior LogoutResponseBinding { get; set; }
