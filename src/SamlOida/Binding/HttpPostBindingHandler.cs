@@ -12,8 +12,8 @@ namespace SamlOida.Binding
     {
         public ExtractionResult ExtractMessage(HttpContext context)
         {
-            //TODO: Could also be SAMLRequest!
-            var encodedMessage = context.Request.Form[SamlAuthenticationDefaults.SamlResponseKey];
+            if (!context.Request.Query.TryGetValue(SamlAuthenticationDefaults.SamlResponseKey, out var encodedMessage))
+                context.Request.Query.TryGetValue(SamlAuthenticationDefaults.SamlRequestKey, out encodedMessage);
 
             var binaryMessage = Convert.FromBase64String(encodedMessage);
             return new ExtractionResult
