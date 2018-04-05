@@ -41,7 +41,7 @@ namespace SamlOida.Test.Binding
         public void BindShouldApplyPostForm()
         {
 
-            _target.BindMessage(_message, _ctx, _uri, _options);
+            _target.BindMessage(_message, _ctx, _uri, SamlAuthenticationDefaults.SamlRequestKey, _options);
 
             _ctx.Response.Body.Position = 0;
 
@@ -71,7 +71,7 @@ namespace SamlOida.Test.Binding
             var targetUri = new Uri("http://test.com/saml-idp");
             const string relayState = "TestRelayState";
 
-            _target.BindMessage(_message, ctx, targetUri, _options, relayState);
+            _target.BindMessage(_message, ctx, targetUri, SamlAuthenticationDefaults.SamlRequestKey, _options, relayState);
 
             ctx.Response.Body.Position = 0;
             string htmlPage;

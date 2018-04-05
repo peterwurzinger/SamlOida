@@ -32,7 +32,7 @@ namespace SamlOida.Test.Binding
         [Fact]
         public void BindShouldApplyHttp302Redirection()
         {
-            _target.BindMessage(_message, _ctx, _uri, _options);
+            _target.BindMessage(_message, _ctx, _uri, SamlAuthenticationDefaults.SamlRequestKey, _options);
 
             Assert.Equal(302, _ctx.Response.StatusCode);
             Assert.StartsWith(_uri.ToString(), _ctx.Response.Headers[HeaderNames.Location]);
@@ -43,7 +43,7 @@ namespace SamlOida.Test.Binding
         {
             const string relayState = "TestRelayState";
 
-            _target.BindMessage(_message, _ctx, _uri, _options, relayState);
+            _target.BindMessage(_message, _ctx, _uri, SamlAuthenticationDefaults.SamlRequestKey, _options, relayState);
 
             var queryString = QueryHelpers.ParseQuery(_ctx.Response.Headers[HeaderNames.Location].ToString().Split('?')[1]);
 
