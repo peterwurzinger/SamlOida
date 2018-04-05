@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TestResultsDir>$(MSBuildThisFileDirectory)TestResults\</TestResultsDir>
-    <OpenCoverFilter>+[SamlOida*]* -[SamlOida.Test]*</OpenCoverFilter>
+    <OpenCoverFilter>+[SamlOida*]* -[SamlOida.Test]* -[SamlOida.FakeIdp]* -[SamlOida.Web]*</OpenCoverFilter>
   </PropertyGroup>
 
   <ItemGroup>
