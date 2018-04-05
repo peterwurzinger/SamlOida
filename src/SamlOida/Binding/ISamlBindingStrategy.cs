@@ -6,8 +6,7 @@ namespace SamlOida.Binding
 {
     public interface ISamlBindingStrategy
     {
-        ExtractionResult ExtractMessage(HttpContext context);
-
-        void SendMessage(SamlOptions options, HttpContext context, XmlDocument message, Uri target, string relayState = null);
+        void BindMessage(XmlDocument message, HttpContext context, Uri target, SamlOptions options,
+            string relayState = null);
     }
 }

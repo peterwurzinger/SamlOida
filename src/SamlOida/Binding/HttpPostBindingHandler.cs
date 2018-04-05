@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using SamlOida.MessageHandler;
 using System;
 using System.IO;
 using System.Text;
@@ -10,23 +9,8 @@ namespace SamlOida.Binding
 {
     public class HttpPostBindingHandler : ISamlBindingStrategy
     {
-        public ExtractionResult ExtractMessage(HttpContext context)
-        {
-            if (!context.Request.Form.TryGetValue(SamlAuthenticationDefaults.SamlResponseKey, out var messageString))
-                context.Request.Form.TryGetValue(SamlAuthenticationDefaults.SamlRequestKey, out messageString);
-
-            if (string.IsNullOrEmpty(messageString))
-                throw new SamlException("Request contains no SAML2 payload.");
-
-            var binaryMessage = Convert.FromBase64String(messageString);
-            return new ExtractionResult
-            {
-                Message = binaryMessage.ToXmlDocument(),
-                RelayState = context.Request.Form[SamlAuthenticationDefaults.RelayStateKey]
-            };
-        }
-
-        public void SendMessage(SamlOptions options, HttpContext context, XmlDocument message, Uri target, string relayState = null)
+        public void BindMessage(XmlDocument message, HttpContext context, Uri target, SamlOptions options,
+            string relayState = null)
         {
             byte[] binaryMessage;
             using (var stream = new MemoryStream())

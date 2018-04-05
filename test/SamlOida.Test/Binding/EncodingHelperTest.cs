@@ -9,12 +9,12 @@ using Xunit;
 
 namespace SamlOida.Test.Binding
 {
-    public class EncodingHelperTest
+    public class EncodingHelperTests
     {
         private readonly SamlOptions _options;
         private readonly XmlDocument _message;
 
-        public EncodingHelperTest()
+        public EncodingHelperTests()
         {
             _options = new SamlOptions();
 

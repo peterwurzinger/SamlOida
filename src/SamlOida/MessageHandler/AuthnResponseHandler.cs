@@ -5,15 +5,13 @@ using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
 using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace SamlOida.MessageHandler
 {
     public class AuthnResponseHandler : IncomingSamlMessageHandler<HandleRequestResult, SamlAuthnResponseMessage>
     {
-        //TODO: HttpPostBinding isn't always sufficient
-        public AuthnResponseHandler(AuthnResponseParser messageParser, HttpPostBindingHandler binding)
-            : base(messageParser, binding)
+        public AuthnResponseHandler(AuthnResponseParser messageParser)
+            : base(messageParser)
         {
         }
 

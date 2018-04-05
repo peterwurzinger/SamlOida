@@ -25,7 +25,7 @@ namespace SamlOida.MessageHandler
 
             var document = MessageFactory.CreateMessage(options, messageContext);
 
-            Binding.SendMessage(options, context, document, target, relayState);
+            Binding.BindMessage(document, context, target, options, relayState);
         }
     }
 }

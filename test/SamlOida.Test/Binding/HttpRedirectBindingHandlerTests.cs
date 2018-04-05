@@ -3,13 +3,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using SamlOida.Binding;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Xml;
-using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.Primitives;
-using SamlOida.MessageHandler;
 using Xunit;
 
 namespace SamlOida.Test.Binding
@@ -19,109 +13,39 @@ namespace SamlOida.Test.Binding
         private readonly HttpRedirectBindingHandler _target;
         private readonly XmlDocument _message;
         private readonly SamlOptions _options;
+        private readonly HttpContext _ctx;
+        private readonly Uri _uri;
 
         public HttpRedirectBindingHandlerTests()
         {
             _target = new HttpRedirectBindingHandler();
 
             _message = new XmlDocument();
-            var el = _message.CreateElement("Message");
-            _message.AppendChild(el);
+            var root = _message.CreateElement("Message");
+            _message.AppendChild(root);
 
             _options = new SamlOptions();
+            _ctx = new DefaultHttpContext();
+            _uri = new Uri("http://test.com/saml-idp");
         }
 
         [Fact]
-        public void ExtractShouldThrowExceptionIfNoPayloadFound()
+        public void BindShouldApplyHttp302Redirection()
         {
-            var ctx = new DefaultHttpContext();
+            _target.BindMessage(_message, _ctx, _uri, _options);
 
-            Assert.Throws<SamlException>(() => _target.ExtractMessage(ctx));
+            Assert.Equal(302, _ctx.Response.StatusCode);
+            Assert.StartsWith(_uri.ToString(), _ctx.Response.Headers[HeaderNames.Location]);
         }
 
         [Fact]
-        public void ExtractShouldExtractMessage()
+        public void BindShouldPreserveRelayState()
         {
-            var ctx = new DefaultHttpContext();
-            
-            var query = new Dictionary<string, StringValues>();
-            var messageBytes = _message.Deflate();
-            query.Add(SamlAuthenticationDefaults.SamlRequestKey, Convert.ToBase64String(messageBytes));
-            ctx.Request.Query = new QueryCollection(query);
-
-            var result = _target.ExtractMessage(ctx);
-
-            Assert.Null(result.SignatureAlgorithm);
-            Assert.Null(result.Signature);
-            Assert.Null(result.RelayState);
-            Assert.Equal(result.Message, _message);
-        }
-
-        [Fact]
-        public void ExtractShouldExtractRelayState()
-        {
-            var ctx = new DefaultHttpContext();
-            
-            var query = new Dictionary<string, StringValues>();
-            var messageBytes = _message.Deflate();
-            const string relayState = "TestRelayState";
-            query.Add(SamlAuthenticationDefaults.SamlRequestKey, Convert.ToBase64String(messageBytes));
-            query.Add(SamlAuthenticationDefaults.RelayStateKey, relayState);
-            ctx.Request.Query = new QueryCollection(query);
-
-            var result = _target.ExtractMessage(ctx);
-
-            Assert.Null(result.SignatureAlgorithm);
-            Assert.Null(result.Signature);
-            Assert.Equal(result.RelayState, relayState);
-            Assert.Equal(result.Message, _message);
-        }
-
-        [Fact]
-        public void ExtractShouldExtractSignature()
-        {
-            var ctx = new DefaultHttpContext();
-
-            var query = new Dictionary<string, StringValues>();
-            var messageBytes = _message.Deflate();
-            query.Add(SamlAuthenticationDefaults.SamlRequestKey, Convert.ToBase64String(messageBytes));
-
-            var signature = Enumerable.Range(0, 10).Select(num => (byte)num).ToArray();
-
-            query.Add(SamlAuthenticationDefaults.SignatureAlgorithmKey, SignedXml.XmlDsigRSASHA1Url);
-            query.Add(SamlAuthenticationDefaults.SignatureKey, Convert.ToBase64String(signature));
-
-            ctx.Request.Query = new QueryCollection(query);
-
-            var result = _target.ExtractMessage(ctx);
-
-            Assert.Equal(SignedXml.XmlDsigRSASHA1Url, result.SignatureAlgorithm);
-            Assert.Equal(signature, result.Signature);
-            Assert.Equal(result.Message, _message);
-        }
-
-        [Fact]
-        public void SendShouldApplyHttp302Redirection()
-        {
-            var ctx = new DefaultHttpContext();
-            var targetUri = new Uri("http://test.com/saml-idp");
-
-            _target.SendMessage(_options, ctx, _message, targetUri);
-
-            Assert.Equal(302, ctx.Response.StatusCode);
-            Assert.StartsWith(targetUri.ToString(), ctx.Response.Headers[HeaderNames.Location]);
-        }
-
-        [Fact]
-        public void SendShouldPreserveRelayState()
-        {
-            var ctx = new DefaultHttpContext();
-            var targetUri = new Uri("http://test.com/saml-idp");
             const string relayState = "TestRelayState";
 
-            _target.SendMessage(_options, ctx, _message, targetUri, relayState);
+            _target.BindMessage(_message, _ctx, _uri, _options, relayState);
 
-            var queryString = QueryHelpers.ParseQuery(ctx.Response.Headers[HeaderNames.Location].ToString().Split('?')[1]);
+            var queryString = QueryHelpers.ParseQuery(_ctx.Response.Headers[HeaderNames.Location].ToString().Split('?')[1]);
 
             Assert.NotNull(queryString);
             Assert.True(queryString.ContainsKey(SamlAuthenticationDefaults.RelayStateKey));
