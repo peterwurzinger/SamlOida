@@ -12,10 +12,13 @@ namespace SamlOida.Binding
     {
         public ExtractionResult ExtractMessage(HttpContext context)
         {
-            if (!context.Request.Query.TryGetValue(SamlAuthenticationDefaults.SamlResponseKey, out var encodedMessage))
-                context.Request.Query.TryGetValue(SamlAuthenticationDefaults.SamlRequestKey, out encodedMessage);
+            if (!context.Request.Form.TryGetValue(SamlAuthenticationDefaults.SamlResponseKey, out var messageString))
+                context.Request.Form.TryGetValue(SamlAuthenticationDefaults.SamlRequestKey, out messageString);
 
-            var binaryMessage = Convert.FromBase64String(encodedMessage);
+            if (string.IsNullOrEmpty(messageString))
+                throw new SamlException("Request contains no SAML2 payload.");
+
+            var binaryMessage = Convert.FromBase64String(messageString);
             return new ExtractionResult
             {
                 Message = binaryMessage.ToXmlDocument(),

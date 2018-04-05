@@ -3,7 +3,13 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using SamlOida.Binding;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Xml;
+using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.Extensions.Primitives;
+using SamlOida.MessageHandler;
 using Xunit;
 
 namespace SamlOida.Test.Binding
@@ -33,7 +39,66 @@ namespace SamlOida.Test.Binding
             Assert.Throws<SamlException>(() => _target.ExtractMessage(ctx));
         }
 
-        //TODO: ExtractMessage-Tests
+        [Fact]
+        public void ExtractShouldExtractMessage()
+        {
+            var ctx = new DefaultHttpContext();
+            
+            var query = new Dictionary<string, StringValues>();
+            var messageBytes = _message.Deflate();
+            query.Add(SamlAuthenticationDefaults.SamlRequestKey, Convert.ToBase64String(messageBytes));
+            ctx.Request.Query = new QueryCollection(query);
+
+            var result = _target.ExtractMessage(ctx);
+
+            Assert.Null(result.SignatureAlgorithm);
+            Assert.Null(result.Signature);
+            Assert.Null(result.RelayState);
+            Assert.Equal(result.Message, _message);
+        }
+
+        [Fact]
+        public void ExtractShouldExtractRelayState()
+        {
+            var ctx = new DefaultHttpContext();
+            
+            var query = new Dictionary<string, StringValues>();
+            var messageBytes = _message.Deflate();
+            const string relayState = "TestRelayState";
+            query.Add(SamlAuthenticationDefaults.SamlRequestKey, Convert.ToBase64String(messageBytes));
+            query.Add(SamlAuthenticationDefaults.RelayStateKey, relayState);
+            ctx.Request.Query = new QueryCollection(query);
+
+            var result = _target.ExtractMessage(ctx);
+
+            Assert.Null(result.SignatureAlgorithm);
+            Assert.Null(result.Signature);
+            Assert.Equal(result.RelayState, relayState);
+            Assert.Equal(result.Message, _message);
+        }
+
+        [Fact]
+        public void ExtractShouldExtractSignature()
+        {
+            var ctx = new DefaultHttpContext();
+
+            var query = new Dictionary<string, StringValues>();
+            var messageBytes = _message.Deflate();
+            query.Add(SamlAuthenticationDefaults.SamlRequestKey, Convert.ToBase64String(messageBytes));
+
+            var signature = Enumerable.Range(0, 10).Select(num => (byte)num).ToArray();
+
+            query.Add(SamlAuthenticationDefaults.SignatureAlgorithmKey, SignedXml.XmlDsigRSASHA1Url);
+            query.Add(SamlAuthenticationDefaults.SignatureKey, Convert.ToBase64String(signature));
+
+            ctx.Request.Query = new QueryCollection(query);
+
+            var result = _target.ExtractMessage(ctx);
+
+            Assert.Equal(SignedXml.XmlDsigRSASHA1Url, result.SignatureAlgorithm);
+            Assert.Equal(signature, result.Signature);
+            Assert.Equal(result.Message, _message);
+        }
 
         [Fact]
         public void SendShouldApplyHttp302Redirection()
