@@ -21,7 +21,7 @@ namespace SamlOida.MessageHandler
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            var result = ExtractMessage(context);
+            var result = ExtractMessage(context, options);
 
             var messageContext = MessageParser.Parse(result.Message);
 
@@ -30,23 +30,23 @@ namespace SamlOida.MessageHandler
             return HandleInternal(options, context, messageContext);
         }
 
-        private static ExtractionResult ExtractMessage(HttpContext context)
+        private static ExtractionResult ExtractMessage(HttpContext context, SamlOptions options)
         {
             if (HttpMethods.IsGet(context.Request.Method))
-                return ExtractionHelper.ExtractHttpRedirect(context.Request.Query);
+                return ExtractionHelper.ExtractHttpRedirect(context.Request.Query, options.IdentityProviderCertificate);
 
             if (HttpMethods.IsPost(context.Request.Method))
-                return ExtractionHelper.ExtractHttpPost(context.Request.Form);
+                return ExtractionHelper.ExtractHttpPost(context.Request.Form, options.IdentityProviderCertificate);
 
             //HTTP-Methods other than GET and POST are not supported
-            throw new NotImplementedException();
+            throw new InvalidOperationException($"HTTP-Method {context.Request.Method} is not supported.");
         }
 
         protected internal virtual void Validate(SamlOptions options, ExtractionResult extractionResult,
             TMessageContext messageContext)
         {
-            //TODO: Check if  Incoming messages need to be signed
-            //TODO: Check contained signature - either in ExtractionResult or embedded in XmlDocument
+            if (options.AcceptSignedMessagesOnly && !extractionResult.HasValidSignature)
+                throw new SamlException("Messages without or with invalid signatures are not accepted.");
         }
 
         protected internal abstract THandlingResult HandleInternal(SamlOptions options, HttpContext httpContext, TMessageContext messageContext);

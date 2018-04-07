@@ -5,8 +5,6 @@ using SamlOida.Binding;
 using SamlOida.MessageHandler;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Xml;
 using Xunit;
 
@@ -30,7 +28,7 @@ namespace SamlOida.Test.Binding
         [Fact]
         public void ExtractRedirectShouldThrowExceptionIfNoPayloadFound()
         {
-            Assert.Throws<SamlException>(() => ExtractionHelper.ExtractHttpRedirect(_ctx.Request.Query));
+            Assert.Throws<SamlException>(() => ExtractionHelper.ExtractHttpRedirect(_ctx.Request.Query, null));
         }
 
         [Fact]
@@ -42,10 +40,9 @@ namespace SamlOida.Test.Binding
             };
             _ctx.Request.Query = new QueryCollection(query);
 
-            var result = ExtractionHelper.ExtractHttpRedirect(_ctx.Request.Query);
+            var result = ExtractionHelper.ExtractHttpRedirect(_ctx.Request.Query, null);
 
-            Assert.Null(result.SignatureAlgorithm);
-            Assert.Null(result.Signature);
+            Assert.False(result.HasValidSignature);
             Assert.Null(result.RelayState);
             Assert.Equal(result.Message, _message);
         }
@@ -61,32 +58,10 @@ namespace SamlOida.Test.Binding
             };
             _ctx.Request.Query = new QueryCollection(query);
 
-            var result = ExtractionHelper.ExtractHttpRedirect(_ctx.Request.Query);
+            var result = ExtractionHelper.ExtractHttpRedirect(_ctx.Request.Query, null);
 
-            Assert.Null(result.SignatureAlgorithm);
-            Assert.Null(result.Signature);
+            Assert.False(result.HasValidSignature);
             Assert.Equal(relayState, result.RelayState);
-            Assert.Equal(_message, result.Message);
-        }
-
-        [Fact]
-        public void ExtractRedirectShouldExtractSignature()
-        {
-            var signature = Enumerable.Range(0, 10).Select(num => (byte)num).ToArray();
-
-            var query = new Dictionary<string, StringValues>
-            {
-                {SamlAuthenticationDefaults.SamlRequestKey, Convert.ToBase64String(_message.Deflate())},
-                {SamlAuthenticationDefaults.SignatureAlgorithmKey, SignedXml.XmlDsigRSASHA1Url},
-                {SamlAuthenticationDefaults.SignatureKey, Convert.ToBase64String(signature)}
-            };
-
-            _ctx.Request.Query = new QueryCollection(query);
-
-            var result = ExtractionHelper.ExtractHttpRedirect(_ctx.Request.Query);
-
-            Assert.Equal(SignedXml.XmlDsigRSASHA1Url, result.SignatureAlgorithm);
-            Assert.Equal(signature, result.Signature);
             Assert.Equal(_message, result.Message);
         }
 
@@ -95,7 +70,7 @@ namespace SamlOida.Test.Binding
         {
             _ctx.Request.ContentType = "application/x-www-form-urlencoded";
 
-            Assert.Throws<SamlException>(() => ExtractionHelper.ExtractHttpPost(_ctx.Request.Form));
+            Assert.Throws<SamlException>(() => ExtractionHelper.ExtractHttpPost(_ctx.Request.Form, null));
         }
 
         [Fact]
@@ -107,10 +82,9 @@ namespace SamlOida.Test.Binding
             };
             _ctx.Request.Form = new FormCollection(form);
 
-            var result = ExtractionHelper.ExtractHttpPost(_ctx.Request.Form);
+            var result = ExtractionHelper.ExtractHttpPost(_ctx.Request.Form, null);
 
-            Assert.Null(result.SignatureAlgorithm);
-            Assert.Null(result.Signature);
+            Assert.False(result.HasValidSignature);
             Assert.Null(result.RelayState);
             Assert.Equal(_message, result.Message);
         }
@@ -128,10 +102,9 @@ namespace SamlOida.Test.Binding
             };
             _ctx.Request.Form = new FormCollection(form);
 
-            var result = ExtractionHelper.ExtractHttpPost(_ctx.Request.Form);
+            var result = ExtractionHelper.ExtractHttpPost(_ctx.Request.Form, null);
 
-            Assert.Null(result.SignatureAlgorithm);
-            Assert.Null(result.Signature);
+            Assert.False(result.HasValidSignature);
             Assert.Equal(relayState, result.RelayState);
             Assert.Equal(result.Message, _message);
         }

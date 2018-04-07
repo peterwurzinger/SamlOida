@@ -1,6 +1,5 @@
 ﻿using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
-using System.Security.Cryptography.Xml;
 using System.Xml;
 
 namespace SamlOida.MessageHandler.MessageFactory

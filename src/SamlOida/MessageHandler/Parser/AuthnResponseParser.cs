@@ -26,14 +26,6 @@ namespace SamlOida.MessageHandler.Parser
             if (statusCodeNode.InnerText.Equals("urn:oasis:names:tc:SAML:2.0:status:Success", StringComparison.OrdinalIgnoreCase))
                 result.Success = true;
 
-            //Response can contain signature itself!
-            var responseSignature = responseNode.SelectSingleNode("ds:Signature", ns);
-            if (responseSignature != null)
-            {
-                result.IsSigned = true;
-                //TODO: Check signature, throw if invalid
-            }
-
             var issueInstantNode = responseNode.SelectSingleNode("@IssueInstant", ns);
             if (string.IsNullOrEmpty(issueInstantNode?.InnerText))
                 throw new ParsingException("Attribute 'IssueInstant' missing");

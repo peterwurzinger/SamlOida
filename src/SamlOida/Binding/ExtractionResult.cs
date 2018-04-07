@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Xml;
+﻿using System.Xml;
 
 namespace SamlOida.Binding
 {
@@ -8,9 +7,7 @@ namespace SamlOida.Binding
         public XmlDocument Message { get; set; }
 
         public string RelayState { get; set; }
-        
-        public IReadOnlyList<byte> Signature { get; set; }
 
-        public string SignatureAlgorithm { get; set; }
+        public bool HasValidSignature { get; set; }
     }
 }
