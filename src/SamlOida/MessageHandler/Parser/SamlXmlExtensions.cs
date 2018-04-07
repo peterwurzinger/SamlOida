@@ -49,6 +49,18 @@ namespace SamlOida.MessageHandler.Parser
 
         }
 
+        internal static void ParseStandardElements(XmlDocument doc, SamlMessage message)
+        {
+            message.Id = doc.DocumentElement.GetAttribute("ID");
+
+            //Does the Standardportal differ from SAML-Standard?
+            message.IssueInstant = DateTime.Parse(doc.DocumentElement.GetAttribute("IssueInstant"));
+
+            message.Destination = doc.DocumentElement.GetAttribute("Destination");
+
+            message.Issuer = doc.DocumentElement.GetElementsByTagName("Issuer", SamlAuthenticationDefaults.SamlAssertionNamespace)[0].Value;
+        }
+
         internal static IEnumerable<SamlAssertion> ParseAssertions(XmlNode responseNode)
         {
             var assertions = responseNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Assertion", NamespaceManager);
