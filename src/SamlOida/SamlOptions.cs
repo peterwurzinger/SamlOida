@@ -10,6 +10,7 @@ namespace SamlOida
     {
         public X509Certificate2 IdentityProviderCertificate { get; set; }
         public X509Certificate2 ServiceProviderCertificate { get; set; }
+        public string ServiceProviderEntityId { get; set; }
         public Uri IdentityProviderSignOnUrl { get; set; }
         public Uri IdentityProviderSignOutUrl { get; set; }
 

@@ -14,9 +14,16 @@ namespace SamlOida.MessageHandler.MessageFactory
 
             SamlXmlExtensions.PropagateStandardElements(doc, logoutRequestElement, message);
 
-            //TODO: Implement Creation of LogoutRequest
-            //<saml:NameID SPNameQualifier="http://sp.example.com/demo1/metadata.php" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">ONELOGIN_f92cc1834efc0f73e9c09f482fce80037a6251e7</saml:NameID>
+            var nameIdElement = doc.CreateElement(SamlAuthenticationDefaults.SamlAssertionNsPrefix, "NameID",
+                SamlAuthenticationDefaults.SamlAssertionNamespace);
 
+            nameIdElement.SetAttribute("SPNameQualifier", options.ServiceProviderEntityId);
+            nameIdElement.SetAttribute("Format", "urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
+
+            //TODO
+            nameIdElement.Value = "TODO";
+
+            logoutRequestElement.AppendChild(nameIdElement);
             doc.AppendChild(logoutRequestElement);
 
             if (options.SignOutgoingMessages)
