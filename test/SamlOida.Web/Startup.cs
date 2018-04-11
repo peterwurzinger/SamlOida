@@ -36,11 +36,13 @@ namespace SamlOida.Web
                 {
                     options.CallbackPath = "/saml-auth";
                     options.AuthnRequestBinding = SamlBindingBehavior.HttpRedirect;
-                    options.IdentityProviderSignOnUrl = new Uri("https://capriza.github.io/samling/samling.html");
+                    //options.IdentityProviderSignOnUrl = new Uri("https://capriza.github.io/samling/samling.html");
+                    options.IdentityProviderSignOnUrl = "https://idp.ssocircle.com:443/sso/SSORedirect/metaAlias/publicidp";
                     options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
+                    options.ServiceProviderEntityId = "SamlOida";
 
-                    options.SignoutCallbackPath = "/saml-spSignoutCallback";
-                    options.SignoutPath = "/saml-idpSignout";
+                    //options.SignoutCallbackPath = "/saml-spSignoutCallback";
+                    //options.SignoutPath = "/saml-idpSignout";
 
                     options.AcceptSignedMessagesOnly = false;
                     options.SignOutgoingMessages = true;

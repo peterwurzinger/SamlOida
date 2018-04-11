@@ -73,6 +73,7 @@ namespace SamlOida.MessageHandler.Parser
 
                 if (signatureNode != null)
                 {
+                    assertion.IsSigned = true;
                     //TODO: Check signature, throw if invalid
                 }
 

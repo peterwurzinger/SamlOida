@@ -15,7 +15,7 @@ namespace SamlOida
 
         public void PostConfigure(string name, SamlOptions options)
         {
-            if (options.ServiceProviderEntityId != null)
+            if (options.ServiceProviderEntityId == null)
                 throw new ArgumentException("EntityID of Service Provider must be provided.");
 
             if (options.IdentityProviderCertificate != null && options.IdentityProviderCertificate.HasPrivateKey)

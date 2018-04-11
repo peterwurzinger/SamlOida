@@ -15,7 +15,7 @@ namespace SamlOida.Test.Binding
         private readonly XmlDocument _message;
         private readonly SamlOptions _options;
         private readonly HttpContext _ctx;
-        private readonly Uri _uri;
+        private readonly string _uri;
 
         public HttpPostBindingHandlerTests()
         {
@@ -27,7 +27,7 @@ namespace SamlOida.Test.Binding
                 Body = new MemoryStream()
             });
 
-            _uri = new Uri("http://test.com/saml-idp");
+            _uri = "http://test.com/saml-idp";
 
             _message = new XmlDocument();
             var el = _message.CreateElement("Message");
@@ -55,7 +55,7 @@ namespace SamlOida.Test.Binding
             Assert.NotNull(htmlPage);
             Assert.NotEqual(string.Empty, htmlPage);
             Assert.Equal("text/html", _ctx.Response.ContentType);
-            Assert.Contains($"<html><body><form action='{_uri.AbsoluteUri}' method='POST'>", htmlPage, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains($"<html><body><form action='{_uri}' method='POST'>", htmlPage, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace SamlOida.Test.Binding
                 Body = new MemoryStream()
             });
 
-            var targetUri = new Uri("http://test.com/saml-idp");
+            var targetUri = "http://test.com/saml-idp";
             const string relayState = "TestRelayState";
 
             _target.BindMessage(_message, ctx, targetUri, SamlAuthenticationDefaults.SamlRequestKey, _options, relayState);

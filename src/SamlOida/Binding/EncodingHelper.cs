@@ -28,11 +28,11 @@ namespace SamlOida.Binding
             var signatureElement = message.RemoveSignature();
 
             var messageBytes = message.Deflate();
-            var encodedMessage = WebUtility.UrlEncode(Convert.ToBase64String(messageBytes));
-            dict.Add(samlFlowKey, encodedMessage);
+            var base64Message = Convert.ToBase64String(messageBytes);
+            dict.Add(samlFlowKey, base64Message);
 
             if (!string.IsNullOrEmpty(relayState))
-                dict.Add(SamlAuthenticationDefaults.RelayStateKey, WebUtility.UrlEncode(relayState));
+                dict.Add(SamlAuthenticationDefaults.RelayStateKey, relayState);
 
             if (signatureElement != null)
             {
@@ -40,13 +40,13 @@ namespace SamlOida.Binding
                 byte[] signature;
 
                 var stringBuilder = new StringBuilder();
-                stringBuilder.Append($"{samlFlowKey}={dict[samlFlowKey]}");
+                stringBuilder.Append($"{samlFlowKey}={WebUtility.UrlEncode(dict[samlFlowKey])}");
 
                 if (!string.IsNullOrEmpty(relayState))
-                    stringBuilder.Append($"&{SamlAuthenticationDefaults.RelayStateKey}={dict[SamlAuthenticationDefaults.RelayStateKey]}");
+                    stringBuilder.Append($"&{SamlAuthenticationDefaults.RelayStateKey}={WebUtility.UrlEncode(relayState)}");
 
                 dict.Add(SamlAuthenticationDefaults.SignatureAlgorithmKey, "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256");
-                stringBuilder.Append($"&{SamlAuthenticationDefaults.SignatureAlgorithmKey}={dict[SamlAuthenticationDefaults.SignatureAlgorithmKey]}");
+                stringBuilder.Append($"&{SamlAuthenticationDefaults.SignatureAlgorithmKey}={WebUtility.UrlEncode(dict[SamlAuthenticationDefaults.SignatureAlgorithmKey])}");
 
                 using (var rsa = options.ServiceProviderCertificate.GetRSAPrivateKey())
                 {
@@ -54,11 +54,8 @@ namespace SamlOida.Binding
 
                     signature = rsa.SignData(signatureData, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                 }
-
-
-                var encodedSignature = WebUtility.UrlEncode(Convert.ToBase64String(signature));
-
-                dict.Add(SamlAuthenticationDefaults.SignatureKey, encodedSignature);
+                
+                dict.Add(SamlAuthenticationDefaults.SignatureKey, Convert.ToBase64String(signature));
             }
 
             return QueryString.Create(dict);

@@ -9,7 +9,7 @@ namespace SamlOida.Binding
 {
     public class HttpPostBindingHandler : ISamlBindingStrategy
     {
-        public void BindMessage(XmlDocument message, HttpContext context, Uri target, string flowKey, SamlOptions options,
+        public void BindMessage(XmlDocument message, HttpContext context, string target, string flowKey, SamlOptions options,
             string relayState = null)
         {
             byte[] binaryMessage;
@@ -22,7 +22,7 @@ namespace SamlOida.Binding
             var encodedMessage = Convert.ToBase64String(binaryMessage);
             
             var builder = new StringBuilder();
-            builder.Append($"<html><body><form action='{target.AbsoluteUri}' method='POST'>");
+            builder.Append($"<html><body><form action='{target}' method='POST'>");
             
             builder.Append($"<input type='hidden' name='{flowKey}' value='{encodedMessage}'/>");
 

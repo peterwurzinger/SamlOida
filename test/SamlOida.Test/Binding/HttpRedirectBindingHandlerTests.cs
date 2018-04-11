@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using SamlOida.Binding;
-using System;
 using System.Xml;
 using Xunit;
 
@@ -14,7 +13,7 @@ namespace SamlOida.Test.Binding
         private readonly XmlDocument _message;
         private readonly SamlOptions _options;
         private readonly HttpContext _ctx;
-        private readonly Uri _uri;
+        private readonly string _uri;
 
         public HttpRedirectBindingHandlerTests()
         {
@@ -26,7 +25,7 @@ namespace SamlOida.Test.Binding
 
             _options = new SamlOptions();
             _ctx = new DefaultHttpContext();
-            _uri = new Uri("http://test.com/saml-idp");
+            _uri = "http://test.com:8080/saml-idp";
         }
 
         [Fact]
@@ -35,7 +34,7 @@ namespace SamlOida.Test.Binding
             _target.BindMessage(_message, _ctx, _uri, SamlAuthenticationDefaults.SamlRequestKey, _options);
 
             Assert.Equal(302, _ctx.Response.StatusCode);
-            Assert.StartsWith(_uri.ToString(), _ctx.Response.Headers[HeaderNames.Location]);
+            Assert.StartsWith(_uri, _ctx.Response.Headers[HeaderNames.Location]);
         }
 
         [Fact]

@@ -25,6 +25,7 @@ namespace SamlOida.Test
         {
             var options = new SamlOptions
             {
+                ServiceProviderEntityId = "MyId",
                 AcceptSignedMessagesOnly = true,
                 IdentityProviderCertificate = null
             };
@@ -37,6 +38,7 @@ namespace SamlOida.Test
         {
             var options = new SamlOptions
             {
+                ServiceProviderEntityId = "MyId",
                 SignOutgoingMessages = true,
                 ServiceProviderCertificate = null
             };
@@ -49,6 +51,7 @@ namespace SamlOida.Test
         {
             var options = new SamlOptions
             {
+                ServiceProviderEntityId = "MyId",
                 IdentityProviderSignOnUrl = null
             };
 

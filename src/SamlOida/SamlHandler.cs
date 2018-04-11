@@ -59,8 +59,8 @@ namespace SamlOida
             var context = new SamlAuthnRequestMessage
             {
                 AssertionConsumerServiceUrl = BuildRedirectUri(Options.CallbackPath),
-                Issuer = "Ich selber",
-                Destination = Options.IdentityProviderSignOnUrl.AbsoluteUri
+                Issuer = Options.ServiceProviderEntityId,
+                Destination = Options.IdentityProviderSignOnUrl
             };
             _authnRequestHandler.Handle(Options, Request.HttpContext, context, Options.IdentityProviderSignOnUrl, BuildRedirectUri(OriginalPath));
 

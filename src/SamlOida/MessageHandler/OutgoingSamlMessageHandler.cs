@@ -20,7 +20,7 @@ namespace SamlOida.MessageHandler
             Binding = binding ?? throw new ArgumentNullException(nameof(binding));
         }
 
-        public void Handle(SamlOptions options, HttpContext context, TMessageContext messageContext, Uri target, string relayState = null)
+        public void Handle(SamlOptions options, HttpContext context, TMessageContext messageContext, string target, string relayState = null)
         {
             //TODO: Extract creation and preparation of messageContext to a separate method.
 
