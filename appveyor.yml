@@ -18,7 +18,7 @@ test_script:
 
 after_test:
   - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:ReportGenerator
-  - cmd: 7z a -y TestResults.zip TestResults
 
 artifacts:
   - path: TestResults
+  - path: TestResults/report/badge_branchcoverage.png
