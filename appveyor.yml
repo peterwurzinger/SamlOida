@@ -25,6 +25,6 @@ artifacts:
      
 deploy:
   - provider: Environment
-    name: azure.blob.saml
+    name: samloida.core.windows.net
     on:
       branch: badge-test
