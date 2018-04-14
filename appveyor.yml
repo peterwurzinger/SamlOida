@@ -18,6 +18,7 @@ test_script:
 
 after_test:
   - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:ReportGenerator
+  - cmd: 7z TestResults.zip
 
 artifacts:
   - path: TestResults
