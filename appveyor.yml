@@ -27,4 +27,4 @@ deploy:
   - provider: Environment
     name: azure.blob.saml
     on:
-      branch: master
+      branch: badge-test
