@@ -20,4 +20,11 @@ after_test:
   - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:ReportGenerator
 
 artifacts:
-  - path: TestResults
+   - path: TestResults
+     name: TestResults
+     
+deploy:
+  - provider: Environment
+    name: samloida.core.windows.net
+    on:
+      branch: badge-test
