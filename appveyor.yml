@@ -27,4 +27,4 @@ deploy:
   - provider: Environment
     name: samloida.core.windows.net
     on:
-      branch: badge-test
+      branch: master
