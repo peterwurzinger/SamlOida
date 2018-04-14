@@ -26,3 +26,9 @@ artifacts:
      name: line_coverage
    - path: TestResults/report/badge_branchcoverage.svg
      name: branch_coverage
+     
+deploy:
+  - provider: Environment
+    name: GitHub
+    on:
+      branch: badge-test
