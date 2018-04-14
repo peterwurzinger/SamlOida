@@ -21,9 +21,3 @@ after_test:
 
 artifacts:
   - path: TestResults
-
-deploy:
-  - provider: Environment
-    name: blob.core.windows.net
-    on:
-      branch: master
