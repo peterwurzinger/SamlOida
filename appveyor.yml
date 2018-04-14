@@ -22,13 +22,9 @@ after_test:
 artifacts:
    - path: TestResults
      name: TestResults
-   - path: TestResults/report/badge_linecoverage.svg
-     name: line_coverage
-   - path: TestResults/report/badge_branchcoverage.svg
-     name: branch_coverage
      
 deploy:
   - provider: Environment
-    name: saml.oida.github
+    name: xxxx
     on:
       branch: badge-test
