@@ -21,5 +21,9 @@ after_test:
 
 artifacts:
   - path: TestResults
-  - path: TestResults/report/badge_linecoverage.svg
-  - path: TestResults/report/badge_branchcoverage.svg
+
+deploy:
+  - provider: Environment
+    name: blob.core.windows.net
+    on:
+      branch: master
