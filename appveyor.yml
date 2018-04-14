@@ -21,4 +21,7 @@ after_test:
 
 artifacts:
   - path: TestResults
-  - path: TestResults/report/badge_branchcoverage.png
+  - path: TestResults/report/badge_linecoverage.svg
+    name: badge_linecoverage.svg
+  - path: TestResults/report/badge_branchcoverage.svg
+    name: badge_branchcoverage.svg
