@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
-using System;
 
 namespace SamlOida.MessageHandler
 {
@@ -13,7 +13,10 @@ namespace SamlOida.MessageHandler
 
         protected internal override object HandleInternal(SamlOptions options, HttpContext httpContext, SamlLogoutResponseMessage messageContext)
         {
-            throw new NotImplementedException();
+            if (messageContext.Success)
+                httpContext.SignOutAsync(options.SignInScheme).Wait();
+
+            return null;
         }
     }
 }

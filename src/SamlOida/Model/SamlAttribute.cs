@@ -2,13 +2,13 @@
 
 namespace SamlOida.Model
 {
-    internal class SamlAttribute
+    public class SamlAttribute
     {
-        internal string Name { get; set; }
-        internal string NameFormat { get; set; }
-        internal string FriendlyName { get; set; }
-        internal bool IsEncrypted { get; set; }
-        internal ISet<string> Values { get; }
+        public string Name { get; internal set; }
+        public string NameFormat { get; internal set; }
+        public string FriendlyName { get; internal set; }
+        public bool IsEncrypted { get; internal set; }
+        public ISet<string> Values { get; }
 
         internal SamlAttribute()
         {

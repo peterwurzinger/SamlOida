@@ -21,5 +21,7 @@
         public const string SignatureKey = "Signature";
         public const string SignatureAlgorithmKey = "SigAlg";
 
+        public const string SessionIndexClaimType = "http://samloida.com/schemas/claims/sessionIndex";
+
     }
 }

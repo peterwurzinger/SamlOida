@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SamlOida.MessageHandler;
 using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
@@ -33,27 +36,33 @@ namespace SamlOida
             _idpInitiatedLogoutResponseHandler = idpInitiatedLogoutResponseHandler ?? throw new ArgumentNullException(nameof(idpInitiatedLogoutResponseHandler));
         }
 
+        /// <inheritdoc />
         public override Task<bool> HandleRequestAsync()
         {
-            //Callback to SpInitiatedSignout
-            if (Options.SignoutCallbackPath == Request.Path)
+            if (Options.LogoutPath == Request.Path)
             {
+                //Wurzinger: Seems a bit hacky to me, but it works...
+                if (HttpMethods.IsGet(Context.Request.Method) &&
+                    Context.Request.Query.ContainsKey(SamlAuthenticationDefaults.SamlRequestKey)
+                    || HttpMethods.IsPost(Context.Request.Method) &&
+                    Context.Request.Form.ContainsKey(SamlAuthenticationDefaults.SamlRequestKey))
+                {
+
+                    var responseMessage = _idpInitiatedLogoutRequestHandler.Handle(Options, Context);
+                    _idpInitiatedLogoutResponseHandler.Handle(Options, Context, responseMessage, Options.IdentityProviderSignOnUrl);
+                    return Task.FromResult(true);
+                }
+
                 _spInitiatedLogoutResponseHandler.Handle(Options, Context);
                 return Task.FromResult(true);
-            }
 
-            //IdpInitiatedSignout
-            if (Options.SignoutPath == Request.Path)
-            {
-                var responseMessage =  _idpInitiatedLogoutRequestHandler.Handle(Options, Context);
-                _idpInitiatedLogoutResponseHandler.Handle(Options, Context, responseMessage, Options.IdentityProviderSignOnUrl);
-                return Task.FromResult(true);
             }
 
             return base.HandleRequestAsync();
         }
 
 
+        /// <inheritdoc />
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             var context = new SamlAuthnRequestMessage
@@ -67,6 +76,7 @@ namespace SamlOida
             return Task.CompletedTask;
         }
 
+        /// <inheritdoc />
         protected override Task<HandleRequestResult> HandleRemoteAuthenticateAsync()
         {
             //Authenticate user based on SamlResponse
@@ -90,10 +100,19 @@ namespace SamlOida
 
         }
 
+        /// <inheritdoc />
         public Task SignOutAsync(AuthenticationProperties properties)
         {
-            _spInitiatedLogoutRequestHandler.Handle(Options, Context, new SamlLogoutRequestMessage(), Options.IdentityProviderSignOutUrl, Context.Request.Path);
-
+            //SP-initiated Signout
+            var logoutRequestMessage = new SamlLogoutRequestMessage
+            {
+                Issuer = Options.ServiceProviderEntityId,
+                Destination = Options.IdentityProviderLogOutUrl,
+                NameId = Context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value,
+                SessionIndex = Context.User.Claims.FirstOrDefault(c => c.Type == SamlAuthenticationDefaults.SessionIndexClaimType)?.Value
+            };
+            _spInitiatedLogoutRequestHandler.Handle(Options, Context, logoutRequestMessage,
+                Options.IdentityProviderLogOutUrl, properties?.RedirectUri ?? Request.Path);
             return Task.CompletedTask;
         }
     }

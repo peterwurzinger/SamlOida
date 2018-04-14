@@ -16,14 +16,16 @@ namespace SamlOida.MessageHandler.MessageFactory
 
             var nameIdElement = doc.CreateElement(SamlAuthenticationDefaults.SamlAssertionNsPrefix, "NameID",
                 SamlAuthenticationDefaults.SamlAssertionNamespace);
+            nameIdElement.InnerText = message.NameId;
 
-            nameIdElement.SetAttribute("SPNameQualifier", options.ServiceProviderEntityId);
-            nameIdElement.SetAttribute("Format", "urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
+            var sessionIndexElement = doc.CreateElement(SamlAuthenticationDefaults.SamlProtocolNsPrefix, "SessionIndex",
+                SamlAuthenticationDefaults.SamlProtocolNamespace);
+            sessionIndexElement.InnerText = message.SessionIndex;
 
-            //TODO
-            nameIdElement.Value = "TODO";
 
             logoutRequestElement.AppendChild(nameIdElement);
+            logoutRequestElement.AppendChild(sessionIndexElement);
+
             doc.AppendChild(logoutRequestElement);
 
             if (options.SignOutgoingMessages)

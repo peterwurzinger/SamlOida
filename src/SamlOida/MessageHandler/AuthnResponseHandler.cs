@@ -4,6 +4,8 @@ using SamlOida.Binding;
 using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace SamlOida.MessageHandler
@@ -24,7 +26,20 @@ namespace SamlOida.MessageHandler
 
         protected internal override HandleRequestResult HandleInternal(SamlOptions options, HttpContext httpContext, SamlAuthnResponseMessage messageContext)
         {
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>(), SamlAuthenticationDefaults.AuthenticationScheme));
+            var principal = new ClaimsPrincipal();
+            foreach (var assertion in messageContext.Assertions)
+            {
+                var claims = new List<Claim>();
+                if (assertion.SessionIndex != null)
+                    claims.Add(new Claim(SamlAuthenticationDefaults.SessionIndexClaimType, assertion.SessionIndex, ClaimValueTypes.String));
+
+                if (assertion.SubjectNameId != null)
+                    claims.Add(new Claim(ClaimTypes.NameIdentifier, assertion.SubjectNameId));
+
+                claims.AddRange(options.ClaimsSelector(assertion.Attributes.ToList()));
+                
+                principal.AddIdentity(new ClaimsIdentity(claims, assertion.Issuer));
+            }
 
             var props = new AuthenticationProperties
             {
@@ -32,7 +47,6 @@ namespace SamlOida.MessageHandler
                 //RedirectUri = relaystate
             };
             
-            //TODO: Insert mapped Identity
             var authTicket = new AuthenticationTicket(principal, props, SamlAuthenticationDefaults.AuthenticationScheme);
 
             return HandleRequestResult.Success(authTicket);

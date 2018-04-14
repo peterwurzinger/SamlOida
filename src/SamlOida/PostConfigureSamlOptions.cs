@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Security.Claims;
 
 namespace SamlOida
 {
@@ -31,8 +32,20 @@ namespace SamlOida
             if (options.IdentityProviderSignOnUrl == null)
                 throw new InvalidOperationException("URL for SignOn needed");
 
-            if (options.IdentityProviderSignOutUrl == null)
-                _logger.LogWarning("Single Sign-Out won't be available due to lack of Sign-Out URL.");
+            if (options.IdentityProviderLogOutUrl == null)
+                _logger.LogWarning("SP initiated Single Logout won't be available due to lack of Sign-Out URL.");
+
+            if (options.ClaimsSelector == null)
+            {
+                options.ClaimsSelector = _ => Array.Empty<Claim>();
+                _logger.LogWarning("No conversion func between SAML-Attributes and System.Security.Claims.Claim supplied.");
+            }
+
+            if (options.CallbackPath == null)
+                options.CallbackPath = "/saml-auth";
+
+            if (options.LogoutPath == null)
+                options.LogoutPath = "saml-logout";
 
         }
     }

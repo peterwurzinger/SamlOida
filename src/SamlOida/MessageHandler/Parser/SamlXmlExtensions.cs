@@ -69,6 +69,9 @@ namespace SamlOida.MessageHandler.Parser
             {
                 var assertion = new SamlAssertion();
                 var assertionNode = assertions[i];
+
+                assertion.Issuer = assertionNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Issuer", NamespaceManager)?.InnerText;
+
                 var signatureNode = assertionNode.SelectSingleNode("ds:Signature", NamespaceManager);
 
                 if (signatureNode != null)
@@ -79,6 +82,9 @@ namespace SamlOida.MessageHandler.Parser
 
                 var attributeStatements = assertionNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:AttributeStatement", NamespaceManager);
                 assertion.Attributes = ParseAttributeStatements(attributeStatements);
+
+                assertion.SessionIndex = assertionNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:AuthnStatement/@SessionIndex", NamespaceManager)?.Value;
+                assertion.SubjectNameId = assertionNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Subject/{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:NameID", NamespaceManager)?.InnerText;
 
                 result.Add(assertion);
             }

@@ -15,7 +15,7 @@ namespace SamlOida.MessageHandler.Parser
 
             SamlXmlExtensions.ParseStandardElements(message, result);
 
-            var statusCodeNode = message.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:LogoutResponse/{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:Status/{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:StatusCode", SamlXmlExtensions.NamespaceManager);
+            var statusCodeNode = message.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:LogoutResponse/{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:Status/{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:StatusCode/@Value", SamlXmlExtensions.NamespaceManager);
             if (statusCodeNode == null)
                 throw new ParsingException("Node 'StatusCode' missing.");
 

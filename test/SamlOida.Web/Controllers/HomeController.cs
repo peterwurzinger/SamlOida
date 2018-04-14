@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SamlOida.Web.Controllers
@@ -13,7 +15,15 @@ namespace SamlOida.Web.Controllers
         [Authorize]
         public ContentResult Secret()
         {
-            return Content($"Welcome {User.Identity.Name}! This is a secret message. If you can read this, you're successfully authenticated! :-)");
+            return Content($"Welcome {User.Identity.Name}! This is a secret message. If you can read this, you're successfully authenticated! :-)<br/><form action='{Url.Action("Logout")}' method='post'><input type='submit' value'Logout'/></form>", "text/html");
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+            return Content("Logout in Progress...");
         }
 
     }

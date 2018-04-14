@@ -9,7 +9,8 @@ namespace SamlOida.MessageHandler
         protected override string FlowKey => SamlAuthenticationDefaults.SamlRequestKey;
 
         //TODO: HttpRedirectBinding isn't always sufficient
-        public AuthnRequestHandler(AuthnRequestFactory messageFactory, HttpRedirectBindingHandler binding) : base(messageFactory, binding)
+        public AuthnRequestHandler(AuthnRequestFactory messageFactory, HttpRedirectBindingHandler binding) : base(
+            messageFactory, binding)
         {
         }
 

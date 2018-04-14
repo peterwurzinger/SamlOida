@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using SamlOida.Binding;
 using System;
 using System.IO;
+using System.Linq;
 using System.Security;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
 namespace SamlOida.Web
@@ -25,28 +26,38 @@ namespace SamlOida.Web
             services
                 .AddAuthentication(options =>
                 {
-                    //options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = SamlAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignOutScheme = SamlAuthenticationDefaults.AuthenticationScheme;
                 })
                 .AddCookie(options =>
                 {
                 })
                 .AddSaml(options =>
                 {
-                    options.CallbackPath = "/saml-auth";
-                    options.AuthnRequestBinding = SamlBindingBehavior.HttpRedirect;
-                    //options.IdentityProviderSignOnUrl = new Uri("https://capriza.github.io/samling/samling.html");
-                    options.IdentityProviderSignOnUrl = "https://idp.ssocircle.com:443/sso/SSORedirect/metaAlias/publicidp";
                     options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
                     options.ServiceProviderEntityId = "SamlOida";
 
+                    options.IdentityProviderSignOnUrl = "https://idp.ssocircle.com:443/sso/SSORedirect/metaAlias/publicidp";
+                    options.CallbackPath = "/saml-auth";
+
+
+                    options.IdentityProviderLogOutUrl = "https://idp.ssocircle.com:443/sso/IDPSloRedirect/metaAlias/publicidp";
+                    options.LogoutPath = "/saml-idpSignout";
                     //options.SignoutCallbackPath = "/saml-spSignoutCallback";
-                    //options.SignoutPath = "/saml-idpSignout";
 
                     options.AcceptSignedMessagesOnly = false;
                     options.SignOutgoingMessages = true;
                     options.ServiceProviderCertificate = cer;
+
+                    options.ClaimsSelector = (attributes) =>
+                        {
+                            return attributes.Select(attr => new Claim(attr.Name, attr.Values.FirstOrDefault()))
+                                .ToList();
+                        };
+
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 });
             services.AddMvc();
         }
