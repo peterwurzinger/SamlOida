@@ -20,5 +20,9 @@ after_test:
   - cmd: dotnet msbuild test\SamlOida.Test\SamlOida.Test.csproj /t:ReportGenerator
 
 artifacts:
-  - path: TestResults
-    name: TestResults
+   - path: TestResults
+     name: TestResults
+   - path: TestResults/report/badge_linecoverage.svg
+     name: line_coverage
+   - path: TestResults/report/badge_branchcoverage.svg
+     name: branch_coverage
