@@ -8,11 +8,11 @@ A ASP.NET Core 2.0 Middelware to allow SAML authentication - supports single sig
 
 ## Installation
 
-### via dotnet
+#### via dotnet
 
 `dotnet add package SamlOida --source https://www.myget.org/F/samloida/api/v3/index.json`
 
-### via nutget.exe
+#### via nutget.exe
 
 `nuget.exe install SamlOida -Source https://www.myget.org/F/samloida/api/v3/index.json`
 
