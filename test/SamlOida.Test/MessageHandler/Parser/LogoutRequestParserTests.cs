@@ -23,7 +23,8 @@ namespace SamlOida.Test.MessageHandler.Parser
             xmlDocument.LoadXml(
                 "<samlp:LogoutRequest Destination='testDestination'" +
                                     " IssueInstant='2018-04-15T10:18:28.8732993Z'" +
-                                    " Version='2.0' ID='Issuer_0afbe3ea-b930-49dc-ad84-6b3a9050caeb'" +
+                                    " Version='2.0'" +
+                                    " ID='Issuer_0afbe3ea-b930-49dc-ad84-6b3a9050caeb'" +
                                     " xmlns:samlp='urn:oasis:names:tc:SAML:2.0:protocol'" +
                                     " xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'>" +
                     "<saml:Issuer>testIssuer</saml:Issuer>" +
