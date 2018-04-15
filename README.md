@@ -44,6 +44,12 @@ public void ConfigureServices(IServiceCollection services) {
 }
 ```
 
+## API
+
+### `AddSaml`
+
+### `options`
+
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our contributing process.
