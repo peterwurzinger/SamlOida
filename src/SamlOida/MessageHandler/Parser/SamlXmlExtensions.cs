@@ -58,7 +58,7 @@ namespace SamlOida.MessageHandler.Parser
 
             message.Destination = doc.DocumentElement.GetAttribute("Destination");
 
-            message.Issuer = doc.DocumentElement.GetElementsByTagName("Issuer", SamlAuthenticationDefaults.SamlAssertionNamespace)[0].Value;
+            message.Issuer = doc.DocumentElement.GetElementsByTagName("Issuer", SamlAuthenticationDefaults.SamlAssertionNamespace)[0].InnerText;
         }
 
         internal static IEnumerable<SamlAssertion> ParseAssertions(XmlNode responseNode)
