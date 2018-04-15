@@ -60,6 +60,8 @@ public void ConfigureServices(IServiceCollection services) {
 
 #### `SamlOptions`
 
+TODO
+
 | Property                    | Type                | Required | Default |
 | --------------------------- | ------------------- | :------: | ------- |
 | ServiceProviderEntityId     | string              |          |         |
