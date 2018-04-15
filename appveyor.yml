@@ -33,4 +33,4 @@ deploy:
   - provider: Environment
     name: samloida.myget.org
     on:
-      branch: deploy
+      branch: master
