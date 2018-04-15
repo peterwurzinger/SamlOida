@@ -12,11 +12,9 @@ Install via dotnet
 
 `dotnet add package SamlOida --source https://www.myget.org/F/samloida/api/v3/index.json`
 
-or
+or via nutget.exe
 
 `nuget.exe install SamlOida -Source https://www.myget.org/F/samloida/api/v3/index.json`
-
-``
 
 ## Example Usage
 
@@ -49,6 +47,3 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our contributing p
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-```
-
-```
