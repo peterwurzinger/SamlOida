@@ -14,10 +14,6 @@ xxx
 
 xxx
 
-## Development setup
-
-x?
-
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our contributing process.
