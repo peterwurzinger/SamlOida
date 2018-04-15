@@ -30,3 +30,7 @@ deploy:
     name: samloida.core.windows.net
     on:
       branch: master
+  - provider: Environment
+    name: samloida.nuget.org
+    on:
+      branch: release
