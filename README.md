@@ -1,4 +1,4 @@
-e# SamlOida
+# SamlOida
 
 [![AppVeyor](https://ci.appveyor.com/api/projects/status/c05vv9y58tbbcj1n/branch/master?svg=true)](https://ci.appveyor.com/project/peterwurzinger/samloida/branch/master)
 [![Line coverage](https://samloida.blob.core.windows.net/samloida/report/badge_branchcoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
@@ -6,7 +6,7 @@ e# SamlOida
 
 A ASP.NET Core 2.0 Middelware to allow SAML authentication - supports single sign-out.
 
-# Disclaimer
+## Disclaimer
 
 This application was built for academical reasons only. Please take this into consideration with regard to security decisions.
 
