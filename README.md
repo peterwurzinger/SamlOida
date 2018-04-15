@@ -47,8 +47,10 @@ public void ConfigureServices(IServiceCollection services) {
 ## API
 
 ### `AddSaml`
+`TODO`
 
 ### `options`
+`TODO`
 
 ## Contributing
 
