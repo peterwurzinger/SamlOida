@@ -31,6 +31,6 @@ deploy:
     on:
       branch: master
   - provider: Environment
-    name: samloida.nuget.org
+    name: samloida.myget.org
     on:
-      branch: release
+      branch: deploy
