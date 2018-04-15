@@ -22,10 +22,10 @@ This application was built for academical purposes only. Please take this into c
 
 ## Example Usage
 
-```c#
+```
 public void ConfigureServices(IServiceCollection services) {
   services
-  	.AddAuthentication(options => {
+    .AddAuthentication(options => {
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = SamlAuthenticationDefaults.AuthenticationScheme;
