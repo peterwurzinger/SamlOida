@@ -23,6 +23,7 @@ after_test:
 artifacts:
    - path: TestResults
      name: TestResults
+   - path: src\**\*.nupkg
      
 deploy:
   - provider: Environment
