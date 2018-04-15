@@ -19,7 +19,7 @@ namespace SamlOida.MessageHandler.Parser
             if (nameIdNode == null)
                 throw new ParsingException("Node 'NameID' missing.");
 
-            result.NameId = nameIdNode.Value;
+            result.NameId = nameIdNode.InnerText;
 
             return result;
         }
