@@ -50,15 +50,15 @@ public void ConfigureServices(IServiceCollection services) {
 
 ## API
 
-#### `AddSaml`
+### `AddSaml`
 
 | Method                                   |
 | ---------------------------------------- |
-| AddSaml(Action<SamlOptions>              |
-| AddSaml(string authenticationScheme, Action<SamlOptions> options) |
-| AddSaml(string authenticationScheme, string displayName, Action<SamlOptions> options) |
+| AddSaml(Action &lt;SamlOptions\>         |
+| AddSaml(string authenticationScheme, Action &lt;SamlOptions> options) |
+| AddSaml(string authenticationScheme, string displayName, Action&lt;SamlOptions> options) |
 
-#### `SamlOptions`
+### `SamlOptions`
 
 TODO
 
