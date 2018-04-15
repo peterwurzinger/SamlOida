@@ -38,5 +38,32 @@ namespace SamlOida.Test.MessageHandler.Parser
             Assert.Equal("testIssuer", result.Issuer);
             Assert.Equal("testNameID", result.NameId);
         }
+
+        [Fact]
+        public void ShouldThrowParsingExceptionLogoutRequestMissing()
+        {
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml("<foo />");
+
+            var ex = Assert.Throws<ParsingException>(() => _logoutRequestParser.Parse(xmlDocument));
+            Assert.Equal("Element 'LogoutRequest' missing.", ex.Message);
+        }
+
+        [Fact]
+        public void ShouldThrowParsingExceptionNameIDMissing()
+        {
+            var xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml("<samlp:LogoutRequest Destination='testDestination'" +
+                                    " IssueInstant='2018-04-15T10:18:28.8732993Z'" +
+                                    " Version='2.0' ID='Issuer_0afbe3ea-b930-49dc-ad84-6b3a9050caeb'" +
+                                    " xmlns:samlp='urn:oasis:names:tc:SAML:2.0:protocol'" +
+                                    " xmlns:saml='urn:oasis:names:tc:SAML:2.0:assertion'>" +
+                    "<saml:Issuer>testIssuer</saml:Issuer>" +
+                    "<samlp:SessionIndex />" +
+                 "</samlp:LogoutRequest>");
+
+            var ex = Assert.Throws<ParsingException>(() => _logoutRequestParser.Parse(xmlDocument));
+            Assert.Equal("Node 'NameID' missing.", ex.Message);
+        }
     }
 }
