@@ -4,15 +4,35 @@
 [![Line coverage](https://samloida.blob.core.windows.net/samloida/report/badge_branchcoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
 [![Branch coverage](https://samloida.blob.core.windows.net/samloida/report/badge_linecoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
 
-A ASP.NET Core 2.0 Middelware to allow SAML Authentication - supports Single Sign-Out.
+A ASP.NET Core 2.0 Middelware to allow SAML authentication - supports single sign-out.
 
 ## Installation
 
 `TODO: MYGET PROCESS`
 
-## Usage
+## Example Usage
 
-xxx
+```c#
+public void ConfigureServices(IServiceCollection services) {
+  services
+  	.AddAuthentication(options => {
+        options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = SamlAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultSignOutScheme = SamlAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(options => {
+    })
+    .AddSaml(options => {
+      	options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
+        options.ServiceProviderEntityId = "SamlOida";
+        options.IdentityProviderSignOnUrl = "your-identity-provider-sign-on-url";
+        options.CallbackPath = "your-sign-on-url";
+        options.IdentityProviderLogOutUrl = "your-identity-provider-log-out-url";
+        options.LogoutPath = "your-logout-url";
+    })
+}
+```
 
 ## Contributing
 
@@ -21,3 +41,6 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our contributing p
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+```
+
+```
