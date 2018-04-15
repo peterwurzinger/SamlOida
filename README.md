@@ -1,8 +1,11 @@
 # SamlOida
 
+
+[![MyGet](https://img.shields.io/myget/samloida/v/samloida.svg)](https://www.myget.org/feed/samloida/package/nuget/SamlOida)
+[![Downloads](https://img.shields.io/myget/samloida/dt/samloida.svg)](https://www.myget.org/feed/samloida/package/nuget/SamlOida)
 [![AppVeyor](https://ci.appveyor.com/api/projects/status/c05vv9y58tbbcj1n/branch/master?svg=true)](https://ci.appveyor.com/project/peterwurzinger/samloida/branch/master)
-[![Line coverage](https://samloida.blob.core.windows.net/samloida/report/badge_branchcoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
-[![Branch coverage](https://samloida.blob.core.windows.net/samloida/report/badge_linecoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
+[![Line coverage](https://samloida.blob.core.windows.net/samloida/report/badge_linecoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
+[![Branch coverage](https://samloida.blob.core.windows.net/samloida/report/badge_branchcoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
 
 A ASP.NET Core 2.0 Middelware to allow SAML authentication - supports single sign-out.
 
@@ -40,17 +43,39 @@ public void ConfigureServices(IServiceCollection services) {
         options.CallbackPath = "your-sign-on-url";
         options.IdentityProviderLogOutUrl = "your-identity-provider-log-out-url";
         options.LogoutPath = "your-logout-url";
+        // TODO: sinnvolle Default-Einstellungen
     })
 }
 ```
 
 ## API
 
-### `AddSaml`
-`TODO`
+#### `AddSaml`
 
-### `options`
-`TODO`
+| Method                                   |
+| ---------------------------------------- |
+| AddSaml(Action<SamlOptions>              |
+| AddSaml(string authenticationScheme, Action<SamlOptions> options) |
+| AddSaml(string authenticationScheme, string displayName, Action<SamlOptions> options) |
+
+#### `SamlOptions`
+
+| Property                    | Type                | Required | Default |
+| --------------------------- | ------------------- | :------: | ------- |
+| ServiceProviderEntityId     | string              |          |         |
+| IdentityProviderSignOnUrl   | string              |          |         |
+| IdentityProviderLogOutUrl   | string              |          |         |
+| CallbackPath                | string              |          |         |
+| LogoutPath                  | string              |          |         |
+| AuthnRequestBinding         | SamlBindingBehavior |          |         |
+| LogoutRequestBinding        | SamlBindingBehavior |          |         |
+| LogoutResponseBinding       | SamlBindingBehavior |          |         |
+| IssueInstantExpiration      | TimeSpan            |          |         |
+| AcceptSignedAssertionsOnly  | bool                |          |         |
+| AcceptSignedMessagesOnly    | bool                |          |         |
+| SignOutgoingMessages        | bool                |          |         |
+| ServiceProviderCertificate  | X509Certificate2    |          |         |
+| IdentityProviderCertificate | X509Certificate2    |          |         |
 
 ## Contributing
 
