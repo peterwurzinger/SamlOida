@@ -17,7 +17,6 @@ namespace SamlOida.Test.MessageHandler.MessageFactory
             _logoutRequestFactory = new LogoutRequestFactory();
         }
 
-        /* TODO
         [Fact]
         public void ShouldCreateMessage()
         {
@@ -29,23 +28,25 @@ namespace SamlOida.Test.MessageHandler.MessageFactory
 
             var xmlDocument = _logoutRequestFactory.CreateMessage(options, authnRequestMessage);
 
-            // TODO
-            // COPY PASTE FROM AuthnRequestFactory
             XmlNamespaceManager mgr = new XmlNamespaceManager(xmlDocument.NameTable);
-            mgr.AddNamespjace("samlp", "urn:oasis:names:tc:SAML:2.0:protocol");
+            mgr.AddNamespace("samlp", "urn:oasis:names:tc:SAML:2.0:protocol");
             mgr.AddNamespace("saml", "urn:oasis:names:tc:SAML:2.0:assertion");
 
-            var authnRequestNode = xmlDocument.SelectSingleNode("/samlp:AuthnRequest", mgr);
-            var issuerNode = xmlDocument.SelectSingleNode("/samlp:AuthnRequest/saml:Issuer", mgr);
+            var logoutResponseNode = xmlDocument.SelectSingleNode("/samlp:LogoutRequest", mgr);
+            var issuerNode = xmlDocument.SelectSingleNode("/samlp:LogoutRequest/saml:Issuer", mgr);
+            var nameIDNode = xmlDocument.SelectSingleNode("/samlp:LogoutRequest/saml:NameID", mgr);
+            var sessionIndexNode = xmlDocument.SelectSingleNode("/samlp:LogoutRequest/samlp:SessionIndex", mgr);
 
-            Assert.NotNull(authnRequestNode);
+            Assert.NotNull(logoutResponseNode);
             Assert.NotNull(issuerNode);
+            Assert.NotNull(nameIDNode);
+            Assert.NotNull(sessionIndexNode);
 
-            Assert.Equal("test", authnRequestNode.Attributes["AssertionConsumerServiceURL"].Value);
-            Assert.Equal("", authnRequestNode.Attributes["Destination"].Value);
-            Assert.Equal("2.0", authnRequestNode.Attributes["Version"].Value);
-            
-    }
-    */
+            Assert.Equal("", logoutResponseNode.Attributes["Destination"].Value);
+            Assert.Equal("2.0", logoutResponseNode.Attributes["Version"].Value);
+
+            Assert.Equal("test", nameIDNode.InnerText);
+
+        }
     }
 }
