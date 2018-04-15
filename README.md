@@ -8,7 +8,7 @@ A ASP.NET Core 2.0 Middelware to allow SAML authentication - supports single sig
 
 ## Disclaimer
 
-This application was built for academical reasons only. Please take this into consideration with regard to security decisions.
+This application was built for academical reasons only. Please take this into consideration in terms of security decisions.
 
 ## Installation
 
