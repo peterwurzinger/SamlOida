@@ -22,7 +22,7 @@ This application was built for academical purposes only. Please take this into c
 
 ## Example Usage
 
-```
+```csharp
 public void ConfigureServices(IServiceCollection services) {
   services
     .AddAuthentication(options => {
