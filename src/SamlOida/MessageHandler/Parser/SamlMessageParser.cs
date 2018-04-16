@@ -27,7 +27,7 @@ namespace SamlOida.MessageHandler.Parser
 
             if (signatureNode != null && idpCertificate != null)
             {
-                var signedXml = new SignedXml();
+                var signedXml = new SignedXml(message);
                 signedXml.LoadXml((XmlElement)signatureNode);
                 msg.HasValidSignature = signedXml.CheckSignature(idpCertificate, false);
             }

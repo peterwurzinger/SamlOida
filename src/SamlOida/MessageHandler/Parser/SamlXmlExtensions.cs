@@ -31,9 +31,8 @@ namespace SamlOida.MessageHandler.Parser
         {
             element.SetAttribute($"xmlns:{SamlAuthenticationDefaults.SamlAssertionNsPrefix}", SamlAuthenticationDefaults.SamlAssertionNamespace);
             element.SetAttribute($"xmlns:{SamlAuthenticationDefaults.SamlProtocolNsPrefix}", SamlAuthenticationDefaults.SamlProtocolNamespace);
-
-            //TODO: Use something else than Guid.NewGuid ?
-            element.SetAttribute("ID", $"{Guid.NewGuid()}");
+            
+            element.SetAttribute("ID", $"_{Guid.NewGuid():N}");
             element.SetAttribute("Version", "2.0");
 
             //Does the Standardportal differ from SAML-Standard?
@@ -66,7 +65,29 @@ namespace SamlOida.MessageHandler.Parser
             message.Issuer = element.GetElementsByTagName("Issuer", SamlAuthenticationDefaults.SamlAssertionNamespace)[0].InnerText;
         }
 
-        
+        public static void SignElement(XmlElement element, SamlOptions options)
+        {
+            var id = element.GetAttribute("ID");
 
+            if (id == null)
+                throw new InvalidOperationException("Attribute 'ID' is missing.");
+
+            //Settings according to https://www.oasis-open.org/committees/download.php/35711/sstc-saml-core-errata-2.0-wd-06-diff.pdf
+            var signedXml = new SignedXml(element.OwnerDocument)
+            {
+                SigningKey = options.ServiceProviderCertificate.PrivateKey,
+            };
+            signedXml.SignedInfo.CanonicalizationMethod = SignedXml.XmlDsigExcC14NTransformUrl;
+
+            var reference = new Reference($"#{id}");
+            reference.AddTransform(new XmlDsigEnvelopedSignatureTransform());
+            reference.AddTransform(new XmlDsigExcC14NTransform());
+
+            signedXml.AddReference(reference);
+            signedXml.ComputeSignature();
+            var signature = signedXml.GetXml();
+
+            element.AppendChild(element.OwnerDocument.ImportNode(signature, true));
+        }
     }
 }

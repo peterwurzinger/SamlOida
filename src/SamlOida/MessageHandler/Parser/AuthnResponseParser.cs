@@ -38,12 +38,13 @@ namespace SamlOida.MessageHandler.Parser
                 var assertionNode = assertions[i];
 
                 assertion.Issuer = assertionNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Issuer", SamlXmlExtensions.NamespaceManager)?.InnerText;
+                assertion.Id = assertionNode.SelectSingleNode("@ID", SamlXmlExtensions.NamespaceManager)?.Value;
 
                 var signatureNode = assertionNode.SelectSingleNode("ds:Signature", SamlXmlExtensions.NamespaceManager);
 
                 if (signatureNode != null && idpCert != null)
                 {
-                    var signedXml = new SignedXml();
+                    var signedXml = new SignedXml(assertionNode.OwnerDocument);
                     signedXml.LoadXml((XmlElement)signatureNode);
                     assertion.HasValidSignature = signedXml.CheckSignature(idpCert, false);
                 }

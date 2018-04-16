@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
-using System;
 
 namespace SamlOida.MessageHandler
 {
@@ -15,9 +14,8 @@ namespace SamlOida.MessageHandler
         {
             return new SamlLogoutResponseMessage
             {
-                Destination = options.IdentityProviderLogOutUrl,
-                IssueInstant = DateTime.Now,
-                Id = Guid.NewGuid().ToString()
+                //TODO: InResponseTo?
+                Destination = options.IdentityProviderLogOutUrl
             };
         }
     }

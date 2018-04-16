@@ -19,7 +19,7 @@ namespace SamlOida.MessageHandler.MessageFactory
             doc.AppendChild(authnRequestElement);
             
             if (options.SignOutgoingMessages)
-                XmlExtensions.SignDocument(doc, options);
+                SamlXmlExtensions.SignElement(authnRequestElement, options);
 
             return doc;
         }
