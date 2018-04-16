@@ -17,7 +17,7 @@ namespace SamlOida.Binding
             if (encoding == SamlAuthenticationDefaults.DeflateEncoding)
                 return SamlDeflateEncoding(options, message, samlFlowKey, relayState);
 
-            throw new NotImplementedException();
+            throw new NotImplementedException(); 
         }
         
         private static QueryString SamlDeflateEncoding(SamlOptions options, XmlDocument message, string samlFlowKey, string relayState)

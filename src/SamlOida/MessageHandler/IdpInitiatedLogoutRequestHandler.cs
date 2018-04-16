@@ -11,9 +11,14 @@ namespace SamlOida.MessageHandler
         {
         }
 
-        protected internal override SamlLogoutResponseMessage HandleInternal(SamlOptions options, HttpContext httpContext, SamlLogoutRequestMessage messageContext)
+        protected internal override SamlLogoutResponseMessage HandleInternal(SamlOptions options, HttpContext httpContext, SamlLogoutRequestMessage messageContext, string relayState = null)
         {
-            throw new NotImplementedException();
+            return new SamlLogoutResponseMessage
+            {
+                Destination = options.IdentityProviderLogOutUrl,
+                IssueInstant = DateTime.Now,
+                Id = Guid.NewGuid().ToString()
+            };
         }
     }
 }

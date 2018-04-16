@@ -1,8 +1,6 @@
 ﻿using SamlOida.MessageHandler.Parser;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using Xunit;
 
@@ -93,7 +91,7 @@ namespace SamlOida.Test.MessageHandler.Parser
 
             Assert.True(result.IssueInstant.Equals(issueInstant));
             Assert.True(result.Success);
-            Assert.False(result.Assertions.First().IsSigned);
+            Assert.False(result.Assertions.First().HasValidSignature);
             Assert.Equal("testAssertionIssuer", result.Assertions.First().Issuer);
             Assert.Equal("testSessionIndex", result.Assertions.First().SessionIndex);
             Assert.Equal("testSubjectID", result.Assertions.First().SubjectNameId);
@@ -114,7 +112,7 @@ namespace SamlOida.Test.MessageHandler.Parser
             xmlDocument.LoadXml("<foo />");
 
             var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument));
-            Assert.Equal("Element Response missing", ex.Message);
+            Assert.Equal("Element 'Response' missing.", ex.Message);
         }
 
         [Fact]

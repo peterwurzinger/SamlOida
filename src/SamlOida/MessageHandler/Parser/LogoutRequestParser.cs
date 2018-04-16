@@ -1,21 +1,16 @@
 ﻿using SamlOida.Model;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 
 namespace SamlOida.MessageHandler.Parser
 {
-    public class LogoutRequestParser : ISamlMessageParser<SamlLogoutRequestMessage>
+    public class LogoutRequestParser : SamlMessageParser<SamlLogoutRequestMessage>
     {
-        public SamlLogoutRequestMessage Parse(XmlDocument message)
+        protected override string RootElementName => "LogoutRequest";
+
+        protected override SamlLogoutRequestMessage ParseInternal(XmlNode logoutRequestNode, SamlLogoutRequestMessage result, X509Certificate2 idpCertificate)
         {
-            var logoutRequestNode = message.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:LogoutRequest", SamlXmlExtensions.NamespaceManager);
-            if (logoutRequestNode == null)
-                throw new ParsingException("Element 'LogoutRequest' missing.");
-
-            var result = new SamlLogoutRequestMessage();
-
-            SamlXmlExtensions.ParseStandardElements(message, result);
-
-            var nameIdNode = message.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:LogoutRequest/{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:NameID", SamlXmlExtensions.NamespaceManager);
+            var nameIdNode = logoutRequestNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:NameID", SamlXmlExtensions.NamespaceManager);
             if (nameIdNode == null)
                 throw new ParsingException("Node 'NameID' missing.");
 

@@ -12,7 +12,7 @@ namespace SamlOida.MessageHandler.MessageFactory
 
             var logoutRequestElement = doc.CreateElement(SamlAuthenticationDefaults.SamlProtocolNsPrefix, "LogoutRequest", SamlAuthenticationDefaults.SamlProtocolNamespace);
 
-            SamlXmlExtensions.PropagateStandardElements(doc, logoutRequestElement, message);
+            SamlXmlExtensions.PropagateStandardElements(logoutRequestElement, message);
 
             var nameIdElement = doc.CreateElement(SamlAuthenticationDefaults.SamlAssertionNsPrefix, "NameID",
                 SamlAuthenticationDefaults.SamlAssertionNamespace);

@@ -21,7 +21,8 @@ namespace SamlOida.Web
             var pw = new SecureString();
             pw.AppendChar('t'); pw.AppendChar('e'); pw.AppendChar('s'); pw.AppendChar('t');
             pw.MakeReadOnly();
-            var cer = new X509Certificate2(File.ReadAllBytes("spPrivateCertificate.pfx"), pw);
+            var spCert = new X509Certificate2(File.ReadAllBytes("spPrivateCertificate.pfx"), pw);
+            var idpCert = new X509Certificate2(File.ReadAllBytes("idpPublicCertificate.cer"));
 
             services
                 .AddAuthentication(options =>
@@ -49,7 +50,8 @@ namespace SamlOida.Web
 
                     options.AcceptSignedMessagesOnly = false;
                     options.SignOutgoingMessages = true;
-                    options.ServiceProviderCertificate = cer;
+                    options.ServiceProviderCertificate = spCert;
+                    options.IdentityProviderCertificate = idpCert;
 
                     options.ClaimsSelector = (attributes) =>
                         {

@@ -12,7 +12,7 @@ namespace SamlOida.Model
 
         internal string SubjectNameId { get; set; }
 
-        internal bool IsSigned { get; set; }
+        internal bool HasValidSignature { get; set; }
 
     }
 }

@@ -11,7 +11,7 @@ namespace SamlOida.MessageHandler.MessageFactory
             var doc = new XmlDocument();
             var logoutResponseElement = doc.CreateElement(SamlAuthenticationDefaults.SamlProtocolNsPrefix, "LogoutResponse", SamlAuthenticationDefaults.SamlProtocolNamespace);
 
-            SamlXmlExtensions.PropagateStandardElements(doc, logoutResponseElement, message);
+            SamlXmlExtensions.PropagateStandardElements(logoutResponseElement, message);
 
             var statusvalue = (message.Success)
                                     ? "urn:oasis:names:tc:SAML:2.0:status:Success"

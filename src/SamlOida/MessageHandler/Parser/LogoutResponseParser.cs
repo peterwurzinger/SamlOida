@@ -1,21 +1,16 @@
-﻿using SamlOida.Model;
+﻿using System.Security.Cryptography.X509Certificates;
+using SamlOida.Model;
 using System.Xml;
 
 namespace SamlOida.MessageHandler.Parser
 {
-    public class LogoutResponseParser : ISamlMessageParser<SamlLogoutResponseMessage>
+    public class LogoutResponseParser : SamlMessageParser<SamlLogoutResponseMessage>
     {
-        public SamlLogoutResponseMessage Parse(XmlDocument message)
-        {
-            var logoutResponseNode = message.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:LogoutResponse", SamlXmlExtensions.NamespaceManager);
-            if (logoutResponseNode == null)
-                throw new ParsingException("Element 'LogoutResponse' missing.");
+        protected override string RootElementName => "LogoutResponse";
 
-            var result = new SamlLogoutResponseMessage();
-
-            SamlXmlExtensions.ParseStandardElements(message, result);
-
-            var statusCodeNode = message.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:LogoutResponse/{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:Status/{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:StatusCode/@Value", SamlXmlExtensions.NamespaceManager);
+        protected override SamlLogoutResponseMessage ParseInternal(XmlNode logoutResponseNode, SamlLogoutResponseMessage result, X509Certificate2 idpCertificate)
+        { 
+            var statusCodeNode = logoutResponseNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:Status/{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:StatusCode/@Value", SamlXmlExtensions.NamespaceManager);
             if (statusCodeNode == null)
                 throw new ParsingException("Node 'StatusCode' missing.");
 

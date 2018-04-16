@@ -24,7 +24,7 @@ namespace SamlOida.MessageHandler
                 throw new SamlException("Issue instant is too long ago.");
         }
 
-        protected internal override HandleRequestResult HandleInternal(SamlOptions options, HttpContext httpContext, SamlAuthnResponseMessage messageContext)
+        protected internal override HandleRequestResult HandleInternal(SamlOptions options, HttpContext httpContext, SamlAuthnResponseMessage messageContext, string relayState = null)
         {
             var principal = new ClaimsPrincipal();
             foreach (var assertion in messageContext.Assertions)
@@ -43,8 +43,8 @@ namespace SamlOida.MessageHandler
 
             var props = new AuthenticationProperties
             {
-                //TODO: Find a way to propagate this.
-                //RedirectUri = relaystate
+                RedirectUri = relayState,
+                IssuedUtc = DateTime.Now
             };
             
             var authTicket = new AuthenticationTicket(principal, props, SamlAuthenticationDefaults.AuthenticationScheme);
