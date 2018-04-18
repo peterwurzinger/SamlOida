@@ -1,7 +1,4 @@
 ﻿using SamlOida.MessageHandler.Parser;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using Xunit;
 
@@ -10,10 +7,12 @@ namespace SamlOida.Test.MessageHandler.Parser
     public class LogoutRequestParserTests
     {
         private readonly LogoutRequestParser _logoutRequestParser;
+        private readonly SamlOptions _options;
 
         public LogoutRequestParserTests()
         {
             _logoutRequestParser = new LogoutRequestParser();
+            _options = new SamlOptions();
         }
 
         [Fact]
@@ -32,7 +31,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                     "<samlp:SessionIndex />" +
                  "</samlp:LogoutRequest>");
 
-            var result = _logoutRequestParser.Parse(xmlDocument);
+            var result = _logoutRequestParser.Parse(xmlDocument, _options);
 
             Assert.Equal("Issuer_0afbe3ea-b930-49dc-ad84-6b3a9050caeb", result.Id);
             Assert.Equal("testDestination", result.Destination);
@@ -46,12 +45,12 @@ namespace SamlOida.Test.MessageHandler.Parser
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml("<foo />");
 
-            var ex = Assert.Throws<ParsingException>(() => _logoutRequestParser.Parse(xmlDocument));
+            var ex = Assert.Throws<ParsingException>(() => _logoutRequestParser.Parse(xmlDocument, _options));
             Assert.Equal("Element 'LogoutRequest' missing.", ex.Message);
         }
 
         [Fact]
-        public void ShouldThrowParsingExceptionNameIDMissing()
+        public void ShouldThrowParsingExceptionNameIdMissing()
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml("<samlp:LogoutRequest Destination='testDestination'" +
@@ -63,7 +62,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                     "<samlp:SessionIndex />" +
                  "</samlp:LogoutRequest>");
 
-            var ex = Assert.Throws<ParsingException>(() => _logoutRequestParser.Parse(xmlDocument));
+            var ex = Assert.Throws<ParsingException>(() => _logoutRequestParser.Parse(xmlDocument, _options));
             Assert.Equal("Node 'NameID' missing.", ex.Message);
         }
     }

@@ -1,7 +1,6 @@
 ﻿using SamlOida.Model;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
@@ -11,7 +10,7 @@ namespace SamlOida.MessageHandler.Parser
     {
         protected override string RootElementName => "Response";
 
-        protected override SamlAuthnResponseMessage ParseInternal(XmlNode responseNode, SamlAuthnResponseMessage result, X509Certificate2 idpCertificate)
+        protected override SamlAuthnResponseMessage ParseInternal(XmlNode responseNode, SamlAuthnResponseMessage result, SamlOptions options)
         {
             var statusCodeNode =
                 responseNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:Status/{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:StatusCode/@Value", SamlXmlExtensions.NamespaceManager);
@@ -22,13 +21,13 @@ namespace SamlOida.MessageHandler.Parser
             if (statusCodeNode.InnerText.Equals("urn:oasis:names:tc:SAML:2.0:status:Success", StringComparison.OrdinalIgnoreCase))
                 result.Success = true;
 
-            var assertions = ParseAssertions(responseNode, idpCertificate);
+            var assertions = ParseAssertions(responseNode, options);
             result.Assertions = assertions;
 
             return result;
         }
 
-        private static IEnumerable<SamlAssertion> ParseAssertions(XmlNode responseNode, X509Certificate2 idpCert)
+        private static IEnumerable<SamlAssertion> ParseAssertions(XmlNode responseNode, SamlOptions options)
         {
             var assertions = responseNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Assertion", SamlXmlExtensions.NamespaceManager);
             var result = new List<SamlAssertion>();
@@ -42,15 +41,15 @@ namespace SamlOida.MessageHandler.Parser
 
                 var signatureNode = assertionNode.SelectSingleNode("ds:Signature", SamlXmlExtensions.NamespaceManager);
 
-                if (signatureNode != null && idpCert != null)
+                if (signatureNode != null && options.IdentityProviderCertificate != null)
                 {
                     var signedXml = new SignedXml(assertionNode.OwnerDocument);
                     signedXml.LoadXml((XmlElement)signatureNode);
-                    assertion.HasValidSignature = signedXml.CheckSignature(idpCert, false);
+                    assertion.HasValidSignature = signedXml.CheckSignature(options.IdentityProviderCertificate, true);
                 }
 
                 var attributeStatements = assertionNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:AttributeStatement", SamlXmlExtensions.NamespaceManager);
-                assertion.Attributes = ParseAttributeStatements(attributeStatements);
+                assertion.Attributes = ParseAttributeStatements(attributeStatements, options);
 
                 assertion.SessionIndex = assertionNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:AuthnStatement/@SessionIndex", SamlXmlExtensions.NamespaceManager)?.Value;
                 assertion.SubjectNameId = assertionNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Subject/{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:NameID", SamlXmlExtensions.NamespaceManager)?.InnerText;
@@ -61,7 +60,7 @@ namespace SamlOida.MessageHandler.Parser
             return result;
         }
 
-        private static IEnumerable<SamlAttribute> ParseAttributeStatements(XmlNodeList attributeStatements)
+        private static IEnumerable<SamlAttribute> ParseAttributeStatements(XmlNodeList attributeStatements, SamlOptions options)
         {
             var parsedAttributes = new List<SamlAttribute>();
             for (var i = 0; i < attributeStatements.Count; i++)
@@ -71,11 +70,10 @@ namespace SamlOida.MessageHandler.Parser
 
                 parsedAttributes.AddRange(ParseAttributes(attributeNodes));
 
-                var encryptedAttributeNodes = attributeStatementNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:EncryptedAttribute", SamlXmlExtensions.NamespaceManager);
+                var encryptedAttributeNodes = attributeStatementNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:EncryptedAttribute/{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Attribute", SamlXmlExtensions.NamespaceManager);
                 if (encryptedAttributeNodes.Count > 0)
                 {
                     parsedAttributes.AddRange(ParseAttributes(encryptedAttributeNodes));
-                    //1. Decrypt
                     //2. Parse as usual attributes
                     throw new NotImplementedException("Parsing encrypted attributes is currently not supported");
                 }

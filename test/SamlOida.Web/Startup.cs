@@ -45,8 +45,7 @@ namespace SamlOida.Web
 
 
                     options.IdentityProviderLogOutUrl = "https://idp.ssocircle.com:443/sso/IDPSloRedirect/metaAlias/publicidp";
-                    options.LogoutPath = "/saml-idpSignout";
-                    //options.SignoutCallbackPath = "/saml-spSignoutCallback";
+                    options.LogoutPath = "/saml-logout";
 
                     options.AcceptSignedMessagesOnly = false;
                     options.SignOutgoingMessages = true;

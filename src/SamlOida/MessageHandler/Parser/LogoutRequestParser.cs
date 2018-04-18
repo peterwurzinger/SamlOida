@@ -1,5 +1,4 @@
 ﻿using SamlOida.Model;
-using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 
 namespace SamlOida.MessageHandler.Parser
@@ -8,7 +7,7 @@ namespace SamlOida.MessageHandler.Parser
     {
         protected override string RootElementName => "LogoutRequest";
 
-        protected override SamlLogoutRequestMessage ParseInternal(XmlNode logoutRequestNode, SamlLogoutRequestMessage result, X509Certificate2 idpCertificate)
+        protected override SamlLogoutRequestMessage ParseInternal(XmlNode logoutRequestNode, SamlLogoutRequestMessage result, SamlOptions options)
         {
             var nameIdNode = logoutRequestNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:NameID", SamlXmlExtensions.NamespaceManager);
             if (nameIdNode == null)
