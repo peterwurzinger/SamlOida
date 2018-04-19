@@ -1,4 +1,4 @@
-# SamlOida
+﻿# SamlOida
 
 [![MyGet](https://img.shields.io/myget/samloida/v/samloida.svg)](https://www.myget.org/feed/samloida/package/nuget/SamlOida)
 [![Downloads](https://img.shields.io/myget/samloida/dt/samloida.svg)](https://www.myget.org/feed/samloida/package/nuget/SamlOida)
@@ -6,11 +6,26 @@
 [![Line coverage](https://samloida.blob.core.windows.net/samloida/report/badge_linecoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
 [![Branch coverage](https://samloida.blob.core.windows.net/samloida/report/badge_branchcoverage.svg)](https://samloida.blob.core.windows.net/samloida/report/index.htm)
 
-A ASP.NET Core 2.0 Middelware to allow SAML authentication - supports single sign-out.
+A ASP.NET Core 2.0 Middelware to allow SAML authentication. It supports
+* Single Sign-on
+⋅⋅* IdP initiated
+⋅⋅* SP initiated
+* Single Sign-out
+⋅⋅* IdP initiated Single Sign-out
+⋅⋅* SP initiated Single Sign-out
+* Signatures
+⋅⋅* Signing outgoing Requests & Responses
+⋅⋅* Validating signatures of incoming Requests & Responses
+* Encryption
+⋅⋅* EncryptedAssertion
+* Bindings
+⋅⋅* HTTP Redirect Binding w/ SAML Deflate Encoding
+⋅⋅* HTTP Post Binding 
 
 ## Disclaimer
 
-This application was built for academical purposes only. Please take this into consideration in terms of security decisions.
+This application was built for academical purposes only. If you need a production ready framework you might want to check out Anders Abel's [Sustainsys](https://github.com/Sustainsys/Saml2).
+**Do not use the library in production environment unless you know exactly what you are doing!**
 
 ## Installation
 
@@ -26,11 +41,7 @@ This application was built for academical purposes only. Please take this into c
 
 ```csharp
 public void ConfigureServices(IServiceCollection services) {
-  
-  var pw = new SecureString();
-  pw.AppendChar('t'); pw.AppendChar('e'); pw.AppendChar('s'); pw.AppendChar('t');
-  pw.MakeReadOnly();
-  var spCert = new X509Certificate2(File.ReadAllBytes("spPrivateCertificate.pfx"), pw);
+  var spCert = new X509Certificate2(File.ReadAllBytes("spPrivateCertificate.pfx"), PASSWORD);
   var idpCert = new X509Certificate2(File.ReadAllBytes("idpPublicCertificate.cer"));
   
   services
@@ -43,7 +54,7 @@ public void ConfigureServices(IServiceCollection services) {
     .AddCookie(options => {
     })
     .AddSaml(options => {
-        options.ServiceProviderEntityId = "SamlOida";
+        options.ServiceProviderEntityId = "your-entity-id";
         options.IdentityProviderSignOnUrl = "your-identity-provider-sign-on-url";
         options.IdentityProviderLogOutUrl = "your-identity-provider-log-out-url";
         options.CallbackPath = "your-sign-on-url";
@@ -51,7 +62,7 @@ public void ConfigureServices(IServiceCollection services) {
       
       	options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
 
-        options.AcceptSignedMessagesOnly = false;
+        options.AcceptSignedMessagesOnly = true;
         options.SignOutgoingMessages = true;
         options.AcceptSignedAssertionsOnly = false;
       
@@ -73,15 +84,12 @@ public void ConfigureServices(IServiceCollection services) {
 
 ### `public static class SamlExtensions`
 
-adds SAML Middelware
-
 | Methods                                  |
 | ---------------------------------------- |
 | AddSaml(Action &lt;SamlOptions&gt;)      |
 | AddSaml(string authenticationScheme, Action &lt;SamlOptions&gt; options) |
 | AddSaml(string authenticationScheme, string displayName, Action&lt;SamlOptions&gt; options) |
 
-The default authenticationScheme can be viewed [here](https://github.com/peterwurzinger/SamlOida/blob/master/src/SamlOida/SamlAuthenticationDefaults.cs).
 
 ### `public class SamlOptions `
 
@@ -111,4 +119,4 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our contributing p
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
