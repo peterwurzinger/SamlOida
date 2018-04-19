@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using SamlOida.MessageHandler.Parser;
 using SamlOida.Model;
 
@@ -12,10 +13,13 @@ namespace SamlOida.MessageHandler
 
         protected internal override SamlLogoutResponseMessage HandleInternal(SamlOptions options, HttpContext httpContext, SamlLogoutRequestMessage messageContext, string relayState = null)
         {
+            httpContext.SignOutAsync(options.SignInScheme).GetAwaiter().GetResult();
             return new SamlLogoutResponseMessage
             {
-                //TODO: InResponseTo?
-                Destination = options.IdentityProviderLogOutUrl
+                Destination = options.IdentityProviderLogOutUrl,
+                Success = true,
+                Issuer = options.ServiceProviderEntityId,
+                InResponseTo = messageContext.Id
             };
         }
     }

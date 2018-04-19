@@ -49,7 +49,7 @@ namespace SamlOida
                 {
 
                     var responseMessage = _idpInitiatedLogoutRequestHandler.Handle(Options, Context);
-                    _idpInitiatedLogoutResponseHandler.Handle(Options, Context, responseMessage, Options.IdentityProviderSignOnUrl);
+                    _idpInitiatedLogoutResponseHandler.Handle(Options, Context, responseMessage, Options.IdentityProviderLogOutUrl);
                     return Task.FromResult(true);
                 }
 

@@ -1,5 +1,4 @@
 ﻿using SamlOida.Model;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 
@@ -10,11 +9,11 @@ namespace SamlOida.MessageHandler.Parser
     {
         protected abstract string RootElementName { get; }
 
-        internal TMessageContext Parse(XmlDocument message, X509Certificate2 idpCertificate = null)
+        internal TMessageContext Parse(XmlDocument message, SamlOptions options)
         {
             var msg = new TMessageContext();
 
-            var encryptedXml = new EncryptedXml(message);
+            var encryptedXml = new X509EncryptedXmlAdapter(message, options.ServiceProviderCertificate);
             encryptedXml.DecryptDocument();
 
             var rootNode = message.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:{RootElementName}", SamlXmlExtensions.NamespaceManager);
@@ -25,16 +24,16 @@ namespace SamlOida.MessageHandler.Parser
 
             var signatureNode = message.DocumentElement.SelectSingleNode("ds:Signature", SamlXmlExtensions.NamespaceManager);
 
-            if (signatureNode != null && idpCertificate != null)
+            if (signatureNode != null && options.IdentityProviderCertificate != null)
             {
                 var signedXml = new SignedXml(message);
                 signedXml.LoadXml((XmlElement)signatureNode);
-                msg.HasValidSignature = signedXml.CheckSignature(idpCertificate, false);
+                msg.HasValidSignature = signedXml.CheckSignature(options.IdentityProviderCertificate, false);
             }
 
-            return ParseInternal(rootNode, msg, idpCertificate);
+            return ParseInternal(rootNode, msg, options);
 
         }
-        protected abstract TMessageContext ParseInternal(XmlNode logoutResponseNode, TMessageContext messageObject, X509Certificate2 idpCertificate);
+        protected abstract TMessageContext ParseInternal(XmlNode logoutResponseNode, TMessageContext messageObject, SamlOptions options);
     }
 }

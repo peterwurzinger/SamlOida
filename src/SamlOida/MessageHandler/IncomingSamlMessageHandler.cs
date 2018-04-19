@@ -23,7 +23,7 @@ namespace SamlOida.MessageHandler
 
             var result = ExtractMessage(context, options);
 
-            var messageContext = MessageParser.Parse(result.Message, options.IdentityProviderCertificate);
+            var messageContext = MessageParser.Parse(result.Message, options);
 
             Validate(options, result, messageContext);
 

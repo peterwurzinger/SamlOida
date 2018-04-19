@@ -15,7 +15,7 @@ namespace SamlOida.Web.Controllers
         [Authorize]
         public ContentResult Secret()
         {
-            return Content($"Welcome {User.Identity.Name}! This is a secret message. If you can read this, you're successfully authenticated! :-)<br/><form action='{Url.Action("Logout")}' method='post'><input type='submit' value'Logout'/></form>", "text/html");
+            return Content($"Welcome {User.Identity.Name}! This is a secret message. If you can read this, you're successfully authenticated! :-)<br/><form action='{Url.Action("Logout")}' method='post'><input type='submit' value='Logout'/></form>", "text/html");
         }
 
         [Authorize]

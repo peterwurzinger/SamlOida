@@ -45,8 +45,7 @@ namespace SamlOida.Web
 
 
                     options.IdentityProviderLogOutUrl = "https://idp.ssocircle.com:443/sso/IDPSloRedirect/metaAlias/publicidp";
-                    options.LogoutPath = "/saml-idpSignout";
-                    //options.SignoutCallbackPath = "/saml-spSignoutCallback";
+                    options.LogoutPath = "/saml-logout";
 
                     options.AcceptSignedMessagesOnly = false;
                     options.SignOutgoingMessages = true;
@@ -64,24 +63,12 @@ namespace SamlOida.Web
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            //loggerFactory.AddConsole();
             app.UseDeveloperExceptionPage();
 
             app.UseAuthentication();
-
-            //app.UseSaml(new SamlOptions
-            //{
-            //    AutomaticChallenge = true,
-            //    ServiceProviderEntityId = "https://localhost:50000/stdportal-sp/test-pv@stdp.gv.at/samloida@bmspot.gv.at",
-            //    SamlBindingOptions = new SamlBindingOptions
-            //    {
-            //        BindingBehavior = SamlBindingBehavior.HttpRedirect,
-            //        IdentityProviderSignOnUrl = "https://unitarytest/stdportal-idp/test-pv@stdp.gv.at/profile/SAML2/Redirect/SSO"
-            //    }
-            //});
 
             app.UseMvc(routes =>
             {
@@ -89,8 +76,6 @@ namespace SamlOida.Web
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.UseDeveloperExceptionPage();
 
         }
     }

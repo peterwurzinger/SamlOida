@@ -1,7 +1,4 @@
 ﻿using SamlOida.MessageHandler.Parser;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using Xunit;
 
@@ -10,10 +7,12 @@ namespace SamlOida.Test.MessageHandler.Parser
     public class LogoutResponseParserTests
     {
         private readonly LogoutResponseParser _logoutResponseParser;
+        private readonly SamlOptions _options;
 
         public LogoutResponseParserTests()
         {
             _logoutResponseParser = new LogoutResponseParser();
+            _options = new SamlOptions();
         }
 
         [Fact]
@@ -34,7 +33,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                  "</samlp:LogoutResponse>"
             );
 
-            var result = _logoutResponseParser.Parse(xmlDocument);
+            var result = _logoutResponseParser.Parse(xmlDocument, _options);
 
             Assert.Equal("Issuer_0d404404-2ae3-4d7a-954a-957b74c32ed9", result.Id);
             Assert.Equal("testDestination", result.Destination);
@@ -60,7 +59,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                  "</samlp:LogoutResponse>"
             );
 
-            var result = _logoutResponseParser.Parse(xmlDocument);
+            var result = _logoutResponseParser.Parse(xmlDocument, _options);
 
             Assert.Equal("Issuer_0d404404-2ae3-4d7a-954a-957b74c32ed9", result.Id);
             Assert.Equal("testDestination", result.Destination);
@@ -74,12 +73,12 @@ namespace SamlOida.Test.MessageHandler.Parser
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml("<foo />");
 
-            var ex = Assert.Throws<ParsingException>(() => _logoutResponseParser.Parse(xmlDocument));
+            var ex = Assert.Throws<ParsingException>(() => _logoutResponseParser.Parse(xmlDocument, _options));
             Assert.Equal("Element 'LogoutResponse' missing.", ex.Message);
         }
 
         [Fact]
-        public void ShouldThrowParsingExceptionNameIDMissing()
+        public void ShouldThrowParsingExceptionNameIdMissing()
         {
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(
@@ -95,7 +94,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                  "</samlp:LogoutResponse>"
             );
 
-            var ex = Assert.Throws<ParsingException>(() => _logoutResponseParser.Parse(xmlDocument));
+            var ex = Assert.Throws<ParsingException>(() => _logoutResponseParser.Parse(xmlDocument, _options));
             Assert.Equal("Node 'StatusCode' missing.", ex.Message);
         }
     }
