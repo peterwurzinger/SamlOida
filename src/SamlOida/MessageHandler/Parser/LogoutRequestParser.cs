@@ -14,6 +14,7 @@ namespace SamlOida.MessageHandler.Parser
                 throw new ParsingException("Node 'NameID' missing.");
 
             result.NameId = nameIdNode.InnerText;
+            result.SessionIndex = logoutRequestNode.SelectSingleNode($"{SamlAuthenticationDefaults.SamlProtocolNsPrefix}:SessionIndex", SamlXmlExtensions.NamespaceManager)?.InnerText;
 
             return result;
         }
