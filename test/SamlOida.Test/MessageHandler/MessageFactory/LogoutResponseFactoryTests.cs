@@ -1,12 +1,9 @@
-﻿using SamlOida.MessageHandler.MessageFactory;
+﻿using System.Xml;
+using SamlOida.MessageHandler.MessageFactory;
 using SamlOida.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml;
 using Xunit;
 
-namespace SamlOida.Test
+namespace SamlOida.Test.MessageHandler.MessageFactory
 {
     public class LogoutResponseFactoryTests
     {

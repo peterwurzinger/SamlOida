@@ -1,8 +1,5 @@
 ﻿using SamlOida.MessageHandler.MessageFactory;
 using SamlOida.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using Xunit;
 
@@ -20,15 +17,13 @@ namespace SamlOida.Test.MessageHandler.MessageFactory
         [Fact]
         public void ShouldCreateMessage()
         {
-            var options = new SamlOptions();
-            options.SignOutgoingMessages = false;
+            var options = new SamlOptions {SignOutgoingMessages = false};
 
-            var authnRequestMessage = new SamlLogoutRequestMessage();
-            authnRequestMessage.NameId = "test";
+            var authnRequestMessage = new SamlLogoutRequestMessage {NameId = "test"};
 
             var xmlDocument = _logoutRequestFactory.CreateMessage(options, authnRequestMessage);
 
-            XmlNamespaceManager mgr = new XmlNamespaceManager(xmlDocument.NameTable);
+            var mgr = new XmlNamespaceManager(xmlDocument.NameTable);
             mgr.AddNamespace("samlp", "urn:oasis:names:tc:SAML:2.0:protocol");
             mgr.AddNamespace("saml", "urn:oasis:names:tc:SAML:2.0:assertion");
 

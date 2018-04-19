@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace SamlOida.MessageHandler.Parser
 {
-    public class AuthnResponseParser : SamlMessageParser<SamlAuthnResponseMessage>
+    public class AuthnResponseParser : SamlMessageParserBase<SamlAuthnResponseMessage>
     {
         protected override string RootElementName => "Response";
 
