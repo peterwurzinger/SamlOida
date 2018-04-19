@@ -3,6 +3,8 @@ using System.Xml;
 using SamlOida.MessageHandler.MessageFactory;
 using SamlOida.Model;
 using Xunit;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
 
 namespace SamlOida.Test.MessageHandler.MessageFactory
 {
@@ -76,6 +78,41 @@ namespace SamlOida.Test.MessageHandler.MessageFactory
             Assert.Equal("2.0", logoutResponseNode.Attributes["Version"].Value);
 
             Assert.Equal("urn:oasis:names:tc:SAML:2.0:status:Responder", statusCodeNode.Attributes["Value"].Value);
+        }
+
+        [Fact]
+        public void ShouldCreateSignedMessage()
+        {
+            var privateCert = new X509Certificate2(File.ReadAllBytes("PrivateTestCert.pfx"), "test");
+            var options = new SamlOptions { SignOutgoingMessages = true, ServiceProviderCertificate = privateCert };
+
+            var samlLogoutResponseMessage = new SamlLogoutResponseMessage
+            {
+                Success = true,
+                InResponseTo = $"_{Guid.NewGuid():N}"
+            };
+
+            var xmlDocument = _logoutResponseFactory.CreateMessage(options, samlLogoutResponseMessage);
+
+            XmlNamespaceManager mgr = new XmlNamespaceManager(xmlDocument.NameTable);
+            mgr.AddNamespace("samlp", "urn:oasis:names:tc:SAML:2.0:protocol");
+            mgr.AddNamespace("saml", "urn:oasis:names:tc:SAML:2.0:assertion");
+
+            var logoutResponseNode = xmlDocument.SelectSingleNode("/samlp:LogoutResponse", mgr);
+            var issuerNode = xmlDocument.SelectSingleNode("/samlp:LogoutResponse/saml:Issuer", mgr);
+            var statusNode = xmlDocument.SelectSingleNode("/samlp:LogoutResponse/samlp:Status", mgr);
+            var statusCodeNode = xmlDocument.SelectSingleNode("/samlp:LogoutResponse/samlp:Status/samlp:StatusCode", mgr);
+
+            Assert.NotNull(logoutResponseNode);
+            Assert.NotNull(issuerNode);
+            Assert.NotNull(statusNode);
+            Assert.NotNull(statusCodeNode);
+
+            Assert.Equal("", logoutResponseNode.Attributes["Destination"].Value);
+            Assert.Equal("2.0", logoutResponseNode.Attributes["Version"].Value);
+            Assert.Equal(samlLogoutResponseMessage.InResponseTo, logoutResponseNode.Attributes["InResponseTo"]?.Value);
+
+            Assert.Equal("urn:oasis:names:tc:SAML:2.0:status:Success", statusCodeNode.Attributes["Value"].Value);
         }
     }
 }
