@@ -45,7 +45,7 @@ namespace SamlOida
                 options.CallbackPath = "/saml-auth";
 
             if (options.LogoutPath == null)
-                options.LogoutPath = "saml-logout";
+                options.LogoutPath = "/saml-logout";
 
         }
     }
