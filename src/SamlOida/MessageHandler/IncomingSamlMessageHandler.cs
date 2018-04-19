@@ -7,11 +7,11 @@ using System;
 namespace SamlOida.MessageHandler
 {
     public abstract class IncomingSamlMessageHandler<THandlingResult, TMessageContext>
-        where TMessageContext : SamlMessage
+        where TMessageContext : SamlMessage, new()
     {
-        protected readonly ISamlMessageParser<TMessageContext> MessageParser;
+        protected readonly SamlMessageParser<TMessageContext> MessageParser;
 
-        protected IncomingSamlMessageHandler(ISamlMessageParser<TMessageContext> messageParser)
+        protected IncomingSamlMessageHandler(SamlMessageParser<TMessageContext> messageParser)
         {
             MessageParser = messageParser ?? throw new ArgumentNullException(nameof(messageParser));
         }
@@ -23,11 +23,11 @@ namespace SamlOida.MessageHandler
 
             var result = ExtractMessage(context, options);
 
-            var messageContext = MessageParser.Parse(result.Message);
+            var messageContext = MessageParser.Parse(result.Message, options);
 
             Validate(options, result, messageContext);
 
-            return HandleInternal(options, context, messageContext);
+            return HandleInternal(options, context, messageContext, result.RelayState);
         }
 
         private static ExtractionResult ExtractMessage(HttpContext context, SamlOptions options)
@@ -45,10 +45,10 @@ namespace SamlOida.MessageHandler
         protected internal virtual void Validate(SamlOptions options, ExtractionResult extractionResult,
             TMessageContext messageContext)
         {
-            if (options.AcceptSignedMessagesOnly && !extractionResult.HasValidSignature)
+            if (options.AcceptSignedMessagesOnly && (!extractionResult.HasValidSignature && !messageContext.HasValidSignature))
                 throw new SamlException("Messages without or with invalid signatures are not accepted.");
         }
 
-        protected internal abstract THandlingResult HandleInternal(SamlOptions options, HttpContext httpContext, TMessageContext messageContext);
+        protected internal abstract THandlingResult HandleInternal(SamlOptions options, HttpContext httpContext, TMessageContext messageContext, string relayState = null);
     }
 }

@@ -8,11 +8,13 @@ namespace SamlOida.Model
 
         internal string SessionIndex { get; set; }
 
+        internal string Id { get; set; }
+
         internal string Issuer { get; set; }
 
         internal string SubjectNameId { get; set; }
 
-        internal bool IsSigned { get; set; }
+        internal bool HasValidSignature { get; set; }
 
     }
 }

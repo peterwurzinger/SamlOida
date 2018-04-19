@@ -12,14 +12,14 @@ namespace SamlOida.MessageHandler.MessageFactory
 
             var authnRequestElement = doc.CreateElement(SamlAuthenticationDefaults.SamlProtocolNsPrefix, "AuthnRequest", SamlAuthenticationDefaults.SamlProtocolNamespace);
 
-            SamlXmlExtensions.PropagateStandardElements(doc, authnRequestElement, authnRequestMessage);
+            SamlXmlExtensions.PropagateStandardElements(authnRequestElement, authnRequestMessage);
 
             authnRequestElement.SetAttribute("AssertionConsumerServiceURL", authnRequestMessage.AssertionConsumerServiceUrl);
 
             doc.AppendChild(authnRequestElement);
             
             if (options.SignOutgoingMessages)
-                XmlExtensions.SignDocument(doc, options);
+                SamlXmlExtensions.SignElement(authnRequestElement, options);
 
             return doc;
         }

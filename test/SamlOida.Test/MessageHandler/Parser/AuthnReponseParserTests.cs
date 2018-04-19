@@ -1,8 +1,6 @@
 ﻿using SamlOida.MessageHandler.Parser;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using Xunit;
 
@@ -11,10 +9,12 @@ namespace SamlOida.Test.MessageHandler.Parser
     public class AuthnResponseParserTests
     {
         private readonly AuthnResponseParser _authnResponseParser;
+        private readonly SamlOptions _options;
 
         public AuthnResponseParserTests()
         {
             _authnResponseParser = new AuthnResponseParser();
+            _options = new SamlOptions();
         }
 
         //TODO: Check Parsing with Assertions
@@ -38,7 +38,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                 "</samlp:Response>"
             );
 
-            var result = _authnResponseParser.Parse(xmlDocument);
+            var result = _authnResponseParser.Parse(xmlDocument, _options);
 
             var issueInstant = DateTime.Parse("2018-04-08T12:57:54.7144887Z");
 
@@ -87,13 +87,13 @@ namespace SamlOida.Test.MessageHandler.Parser
                 "</samlp:Response>"
             );
 
-            var result = _authnResponseParser.Parse(xmlDocument);
+            var result = _authnResponseParser.Parse(xmlDocument, _options);
 
             var issueInstant = DateTime.Parse("2018-04-08T12:57:54.7144887Z");
 
             Assert.True(result.IssueInstant.Equals(issueInstant));
             Assert.True(result.Success);
-            Assert.False(result.Assertions.First().IsSigned);
+            Assert.False(result.Assertions.First().HasValidSignature);
             Assert.Equal("testAssertionIssuer", result.Assertions.First().Issuer);
             Assert.Equal("testSessionIndex", result.Assertions.First().SessionIndex);
             Assert.Equal("testSubjectID", result.Assertions.First().SubjectNameId);
@@ -113,8 +113,8 @@ namespace SamlOida.Test.MessageHandler.Parser
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml("<foo />");
 
-            var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument));
-            Assert.Equal("Element Response missing", ex.Message);
+            var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument, _options));
+            Assert.Equal("Element 'Response' missing.", ex.Message);
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                 "</samlp:Response>"
             );
 
-            var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument));
+            var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument, _options));
             Assert.Equal("Element 'StatusCode' missing", ex.Message);
         }
 
@@ -157,7 +157,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                 "</samlp:Response>"
             );
 
-            var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument));
+            var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument, _options));
             Assert.Equal("Attribute 'IssueInstant' missing", ex.Message);
         }
 
@@ -180,7 +180,7 @@ namespace SamlOida.Test.MessageHandler.Parser
                 "</samlp:Response>"
             );
 
-            var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument));
+            var ex = Assert.Throws<ParsingException>(() => _authnResponseParser.Parse(xmlDocument, _options));
             Assert.Equal("Issue instant cannot be parsed", ex.Message);
         }
     }

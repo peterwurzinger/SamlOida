@@ -10,8 +10,12 @@ namespace SamlOida.MessageHandler.MessageFactory
         {
             var doc = new XmlDocument();
             var logoutResponseElement = doc.CreateElement(SamlAuthenticationDefaults.SamlProtocolNsPrefix, "LogoutResponse", SamlAuthenticationDefaults.SamlProtocolNamespace);
+            
+            SamlXmlExtensions.PropagateStandardElements(logoutResponseElement, message);
 
-            SamlXmlExtensions.PropagateStandardElements(doc, logoutResponseElement, message);
+
+            if (message.InResponseTo != null)
+                logoutResponseElement.SetAttribute("InResponseTo", message.InResponseTo);
 
             var statusvalue = (message.Success)
                                     ? "urn:oasis:names:tc:SAML:2.0:status:Success"
@@ -27,7 +31,7 @@ namespace SamlOida.MessageHandler.MessageFactory
             doc.AppendChild(logoutResponseElement);
 
             if (options.SignOutgoingMessages)
-                XmlExtensions.SignDocument(doc, options);
+                SamlXmlExtensions.SignElement(logoutResponseElement, options);
 
             return doc;
         }

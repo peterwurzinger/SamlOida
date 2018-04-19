@@ -7,8 +7,8 @@ namespace SamlOida.MessageHandler
     public class IdpInitiatedLogoutResponseHandler : OutgoingSamlMessageHandler<SamlLogoutResponseMessage>
     {
         protected override string FlowKey => SamlAuthenticationDefaults.SamlResponseKey;
-
-        //TODO: Binding
+        
+        //Binding
         public IdpInitiatedLogoutResponseHandler(LogoutResponseFactory messageFactory, HttpRedirectBindingHandler binding) : base(messageFactory, binding)
         {
         }

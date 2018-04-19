@@ -11,5 +11,7 @@ namespace SamlOida.Model
         public DateTime IssueInstant { get; set; }
 
         public string Destination { get; set; }
+
+        public bool HasValidSignature { get; set; }
     }
 }
