@@ -27,6 +27,13 @@ This application was built for academical purposes only. Please take this into c
 
 ```csharp
 public void ConfigureServices(IServiceCollection services) {
+  
+  var pw = new SecureString();
+  pw.AppendChar('t'); pw.AppendChar('e'); pw.AppendChar('s'); pw.AppendChar('t');
+  pw.MakeReadOnly();
+  var spCert = new X509Certificate2(File.ReadAllBytes("spPrivateCertificate.pfx"), pw);
+  var idpCert = new X509Certificate2(File.ReadAllBytes("idpPublicCertificate.cer"));
+  
   services
     .AddAuthentication(options => {
         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -37,47 +44,67 @@ public void ConfigureServices(IServiceCollection services) {
     .AddCookie(options => {
     })
     .AddSaml(options => {
-      	options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
         options.ServiceProviderEntityId = "SamlOida";
         options.IdentityProviderSignOnUrl = "your-identity-provider-sign-on-url";
-        options.CallbackPath = "your-sign-on-url";
         options.IdentityProviderLogOutUrl = "your-identity-provider-log-out-url";
+        options.CallbackPath = "your-sign-on-url";
         options.LogoutPath = "your-logout-url";
-        // TODO: sinnvolle Default-Einstellungen
+      
+      	options.IssueInstantExpiration = TimeSpan.FromMinutes(20);
+
+        options.AcceptSignedMessagesOnly = false;
+        options.SignOutgoingMessages = true;
+        options.AcceptSignedAssertionsOnly = false;
+      
+        options.ServiceProviderCertificate = spCert;
+        options.IdentityProviderCertificate = idpCert;
+
+        options.ClaimsSelector = (attributes) =>
+        {
+          return attributes.Select(attr => new Claim(attr.Name, attr.Values.FirstOrDefault()))
+            .ToList();
+		};
+      
+      	options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     })
 }
 ```
 
 ## API
 
-### `AddSaml`
+### `public static class SamlExtensions`
 
-| Method                                   |
+Adds SAML Middelware. 
+
+| Methods                                  |
 | ---------------------------------------- |
-| AddSaml(Action &lt;SamlOptions\>         |
-| AddSaml(string authenticationScheme, Action &lt;SamlOptions> options) |
-| AddSaml(string authenticationScheme, string displayName, Action&lt;SamlOptions> options) |
+| AddSaml(Action &lt;SamlOptions&gt;)      |
+| AddSaml(string authenticationScheme, Action &lt;SamlOptions&gt; options) |
+| AddSaml(string authenticationScheme, string displayName, Action&lt;SamlOptions&gt; options) |
 
-### `SamlOptions`
+The default authenticationScheme can be viewed [here](https://github.com/peterwurzinger/SamlOida/blob/master/src/SamlOida/SamlAuthenticationDefaults.cs).
 
-TODO
+### `public class SamlOptions `
 
-| Property                    | Type                | Required | Default |
-| --------------------------- | ------------------- | :------: | ------- |
-| ServiceProviderEntityId     | string              |          |         |
-| IdentityProviderSignOnUrl   | string              |          |         |
-| IdentityProviderLogOutUrl   | string              |          |         |
-| CallbackPath                | string              |          |         |
-| LogoutPath                  | string              |          |         |
-| AuthnRequestBinding         | SamlBindingBehavior |          |         |
-| LogoutRequestBinding        | SamlBindingBehavior |          |         |
-| LogoutResponseBinding       | SamlBindingBehavior |          |         |
-| IssueInstantExpiration      | TimeSpan            |          |         |
-| AcceptSignedAssertionsOnly  | bool                |          |         |
-| AcceptSignedMessagesOnly    | bool                |          |         |
-| SignOutgoingMessages        | bool                |          |         |
-| ServiceProviderCertificate  | X509Certificate2    |          |         |
-| IdentityProviderCertificate | X509Certificate2    |          |         |
+`:  Microsoft.AspNetCore.Authentication.RemoteAuthenticationOptions`
+
+| Property                    | Type                                     | DefaultValue     |
+| --------------------------- | ---------------------------------------- | ---------------- |
+| ServiceProviderEntityId     | string                                   | `null`           |
+| IdentityProviderSignOnUrl   | string                                   | `null`           |
+| IdentityProviderLogOutUrl   | string                                   | `null`           |
+| CallbackPath                | string                                   | `"/saml-auth"`   |
+| LogoutPath                  | string                                   | `"/saml-logout"` |
+| IssueInstantExpiration      | TimeSpan                                 | `null`           |
+| AcceptSignedMessagesOnly    | bool                                     | `true`           |
+| SignOutgoingMessages        | bool                                     | `true`           |
+| AcceptSignedAssertionsOnly  | bool                                     | `false`          |
+| ServiceProviderCertificate  | X509Certificate2                         | `null`           |
+| IdentityProviderCertificate | X509Certificate2                         | `null`           |
+| LogoutResponseBinding       | SamlBindingBehavior                      | `null`           |
+| LogoutRequestBinding        | SamlBindingBehavior                      | `null`           |
+| AuthnRequestBinding         | SamlBindingBehavior                      | `null`           |
+| ClaimsSelector              | Func &lt;ICollection&lt;SamlAttribute&gt;, ICollection&lt;Claim&gt;&gt; | `null`           |
 
 ## Contributing
 
