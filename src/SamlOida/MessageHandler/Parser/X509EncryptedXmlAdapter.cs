@@ -33,14 +33,8 @@ namespace SamlOida.MessageHandler.Parser
 
             if (encryptedKey == null)
                 throw new ArgumentNullException(nameof(encryptedKey));
-
-            //The CipherValue is the encrypted key.
-            var encryptedKeyData = encryptedKey.CipherData?.CipherValue;
-            if (encryptedKeyData == null)
-                throw new ArgumentException("Could not find encrypted key.");
             
-            //TODO: Check if Encryption Method is RSA-OAEP and set switch
-            return DecryptKey(encryptedKeyData, _certificate.GetRSAPrivateKey(), false);
+            return DecryptKey(encryptedKey.CipherData.CipherValue, _certificate.GetRSAPrivateKey(), encryptedKey.EncryptionMethod.KeyAlgorithm == XmlEncRSAOAEPUrl);
 
         }
     }
