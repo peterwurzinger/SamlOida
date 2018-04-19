@@ -8,19 +8,19 @@
 
 A ASP.NET Core 2.0 Middelware to allow SAML authentication. It supports
 * Single Sign-on
-⋅⋅* IdP initiated
-⋅⋅* SP initiated
+	* IdP initiated
+	* SP initiated
 * Single Sign-out
-⋅⋅* IdP initiated Single Sign-out
-⋅⋅* SP initiated Single Sign-out
+	* IdP initiated Single Sign-out
+	* SP initiated Single Sign-out
 * Signatures
-⋅⋅* Signing outgoing Requests & Responses
-⋅⋅* Validating signatures of incoming Requests & Responses
+	* Signing outgoing Requests & Responses
+	* Validating signatures of incoming Requests & Responses
 * Encryption
-⋅⋅* EncryptedAssertion
+	* EncryptedAssertion
 * Bindings
-⋅⋅* HTTP Redirect Binding w/ SAML Deflate Encoding
-⋅⋅* HTTP Post Binding 
+	* HTTP Redirect Binding w/ SAML Deflate Encoding
+	* HTTP Post Binding 
 
 ## Disclaimer
 
