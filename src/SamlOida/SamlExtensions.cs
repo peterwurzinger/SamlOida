@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using System;
 using SamlOida.Binding;
 using SamlOida.MessageHandler;
 using SamlOida.MessageHandler.MessageFactory;
 using SamlOida.MessageHandler.Parser;
+using System;
 
 namespace SamlOida
 {
@@ -25,16 +25,15 @@ namespace SamlOida
         {
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<SamlOptions>, PostConfigureSamlOptions>());
 
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ISamlBindingStrategy, HttpPostBindingHandler>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ISamlBindingStrategy, HttpRedirectBindingHandler>());
 
-            builder.Services.AddSingleton<AuthnRequestHandler>();
-            builder.Services.AddSingleton<AuthnResponseHandler>();
-            builder.Services.AddSingleton<IdpInitiatedLogoutResponseHandler>();
-            builder.Services.AddSingleton<IdpInitiatedLogoutRequestHandler>();
-            builder.Services.AddSingleton<SpInitiatedLogoutRequestHandler>();
-            builder.Services.AddSingleton<SpInitiatedLogoutResponseHandler>();
-
-            builder.Services.AddSingleton<HttpPostBindingHandler>();
-            builder.Services.AddSingleton<HttpRedirectBindingHandler>();
+            builder.Services.AddScoped<AuthnRequestHandler>();
+            builder.Services.AddScoped<AuthnResponseHandler>();
+            builder.Services.AddScoped<IdpInitiatedLogoutResponseHandler>();
+            builder.Services.AddScoped<IdpInitiatedLogoutRequestHandler>();
+            builder.Services.AddScoped<SpInitiatedLogoutRequestHandler>();
+            builder.Services.AddScoped<SpInitiatedLogoutResponseHandler>();
 
             builder.Services.AddSingleton<AuthnRequestFactory>();
             builder.Services.AddSingleton<LogoutRequestFactory>();
