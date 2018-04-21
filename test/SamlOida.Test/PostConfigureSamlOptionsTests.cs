@@ -108,12 +108,13 @@ namespace SamlOida.Test
                 ServiceProviderEntityId = "MyId",
                 ServiceProviderCertificate = null,
                 AcceptSignedMessagesOnly = false,
+                AcceptSignedAssertionsOnly = false,
                 IdentityProviderCertificate = null,
                 SignOutgoingMessages = false,
                 IdentityProviderSignOnUrl = "ips-sign-on-url",
                 IdentityProviderLogOutUrl = "ips-log-out-url",
                 CallbackPath = null,
-                LogoutPath = null
+                LogoutPath = null,
             };
 
             _target.PostConfigure(string.Empty, options);
