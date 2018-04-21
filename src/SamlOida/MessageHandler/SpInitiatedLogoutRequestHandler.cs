@@ -1,6 +1,7 @@
 ﻿using SamlOida.Binding;
 using SamlOida.MessageHandler.MessageFactory;
 using SamlOida.Model;
+using System.Collections.Generic;
 
 namespace SamlOida.MessageHandler
 {
@@ -8,11 +9,9 @@ namespace SamlOida.MessageHandler
     {
         protected override string FlowKey => SamlAuthenticationDefaults.SamlRequestKey;
 
-        //TODO: Binding
-        public SpInitiatedLogoutRequestHandler(LogoutRequestFactory messageFactory, HttpRedirectBindingHandler binding) : base(messageFactory, binding)
+        public SpInitiatedLogoutRequestHandler(LogoutRequestFactory messageFactory, IEnumerable<ISamlBindingStrategy> bindings) : base(messageFactory, bindings)
         {
         }
 
-        //TODO Implement
     }
 }

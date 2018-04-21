@@ -28,7 +28,7 @@ namespace SamlOida.Test
             var messageHandlerTypes = typeof(SamlHandler).Assembly.GetTypes().Where(t =>
                 t.Namespace == typeof(AuthnRequestHandler).Namespace && t.IsPublic && !t.IsAbstract && t.BaseType.IsGenericType 
                     && (t.BaseType.GetGenericTypeDefinition() == typeof(OutgoingSamlMessageHandler<>) || t.BaseType.GetGenericTypeDefinition() == typeof(IncomingSamlMessageHandler<,>)))
-                .Select(type => ServiceDescriptor.Singleton(type, type))
+                .Select(type => ServiceDescriptor.Scoped(type, type))
                 .ToList();
 
             Assert.NotEmpty(messageHandlerTypes);
@@ -44,7 +44,7 @@ namespace SamlOida.Test
 
             var bindings = typeof(SamlHandler).Assembly.GetTypes().Where(t =>
                     t.Namespace == typeof(ISamlBindingStrategy).Namespace && t.IsPublic && !t.IsAbstract && t.GetTypeInfo().ImplementedInterfaces.Contains(typeof(ISamlBindingStrategy)))
-                .Select(type => ServiceDescriptor.Singleton(type, type))
+                .Select(type => ServiceDescriptor.Singleton(typeof(ISamlBindingStrategy), type))
                 .ToList();
 
             Assert.NotEmpty(bindings);

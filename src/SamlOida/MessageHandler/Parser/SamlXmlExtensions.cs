@@ -31,7 +31,7 @@ namespace SamlOida.MessageHandler.Parser
         {
             element.SetAttribute($"xmlns:{SamlAuthenticationDefaults.SamlAssertionNsPrefix}", SamlAuthenticationDefaults.SamlAssertionNamespace);
             element.SetAttribute($"xmlns:{SamlAuthenticationDefaults.SamlProtocolNsPrefix}", SamlAuthenticationDefaults.SamlProtocolNamespace);
-            
+
             element.SetAttribute("ID", $"_{Guid.NewGuid():N}");
             element.SetAttribute("Version", "2.0");
 
@@ -87,7 +87,14 @@ namespace SamlOida.MessageHandler.Parser
             signedXml.ComputeSignature();
             var signature = signedXml.GetXml();
 
-            element.AppendChild(element.OwnerDocument.ImportNode(signature, true));
+            var signatureNode = element.OwnerDocument.ImportNode(signature, true);
+
+            var issuerElement = element.SelectSingleNode($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Issuer", NamespaceManager);
+
+            if (issuerElement != null)
+                element.InsertAfter(signatureNode, issuerElement);
+            else
+                element.AppendChild(signatureNode);
         }
     }
 }

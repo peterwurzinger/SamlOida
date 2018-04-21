@@ -1,8 +1,9 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using SamlOida.Binding;
 using SamlOida.Test.Binding;
 using SamlOida.Test.MessageHandler.MessageFactory;
 using SamlOida.Test.Model;
+using System;
 using Xunit;
 
 namespace SamlOida.Test.MessageHandler
@@ -18,7 +19,7 @@ namespace SamlOida.Test.MessageHandler
         {
             _factory = new FakeSamlMessageFactory();
             _binding = new FakeBinding();
-            _target = new FakeOutgoingSamlMessageHandler(_factory, _binding);
+            _target = new FakeOutgoingSamlMessageHandler(_factory, new []{_binding});
             _options = new SamlOptions();
         }
 
@@ -31,13 +32,13 @@ namespace SamlOida.Test.MessageHandler
         [Fact]
         public void ConstructorShouldThrowExceptionIfFactoryIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new FakeOutgoingSamlMessageHandler(null, _binding));
+            Assert.Throws<ArgumentNullException>(() => new FakeOutgoingSamlMessageHandler(null, new []{_binding}));
         }
 
         [Fact]
         public void HandleShouldCallMessageFactory()
         {
-            _target.Handle(_options, new DefaultHttpContext(), new FakeSamlMessage(), "target", null);
+            _target.Handle(_options, new DefaultHttpContext(), new FakeSamlMessage(), "target", SamlBindingBehavior.HttpRedirect);
 
             Assert.True(_factory.CreateMessageCalled);
         }
@@ -45,7 +46,7 @@ namespace SamlOida.Test.MessageHandler
         [Fact]
         public void HandleShouldBindMessage()
         {
-            _target.Handle(_options, new DefaultHttpContext(), new FakeSamlMessage(), "target", null);
+            _target.Handle(_options, new DefaultHttpContext(), new FakeSamlMessage(), "target", SamlBindingBehavior.HttpRedirect);
 
             Assert.True(_binding.BindMessageCalled);
         }

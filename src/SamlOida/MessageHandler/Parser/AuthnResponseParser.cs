@@ -29,7 +29,9 @@ namespace SamlOida.MessageHandler.Parser
 
         private static IEnumerable<SamlAssertion> ParseAssertions(XmlNode responseNode, SamlOptions options)
         {
-            var assertions = responseNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Assertion", SamlXmlExtensions.NamespaceManager);
+            //All Assertions as direct child of Response-Element, or wrapped in EncryptedAssertion
+            var assertions = responseNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Assertion | {SamlAuthenticationDefaults.SamlAssertionNsPrefix}:EncryptedAssertion/{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Assertion", SamlXmlExtensions.NamespaceManager);
+
             var result = new List<SamlAssertion>();
             for (var i = 0; i < assertions.Count; i++)
             {
@@ -73,9 +75,8 @@ namespace SamlOida.MessageHandler.Parser
                 var encryptedAttributeNodes = attributeStatementNode.SelectNodes($"{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:EncryptedAttribute/{SamlAuthenticationDefaults.SamlAssertionNsPrefix}:Attribute", SamlXmlExtensions.NamespaceManager);
                 if (encryptedAttributeNodes.Count > 0)
                 {
-                    parsedAttributes.AddRange(ParseAttributes(encryptedAttributeNodes));
                     //2. Parse as usual attributes
-                    throw new NotImplementedException("Parsing encrypted attributes is currently not supported");
+                    parsedAttributes.AddRange(ParseAttributes(encryptedAttributeNodes));
                 }
             }
 
