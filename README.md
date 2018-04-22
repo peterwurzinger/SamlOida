@@ -11,8 +11,8 @@ A ASP.NET Core 2.0 Middelware to allow SAML authentication. It supports
 	* IdP initiated
 	* SP initiated
 * Single Sign-out
-	* IdP initiated Single Sign-out
-	* SP initiated Single Sign-out
+	* IdP initiated
+	* SP initiated
 * Signatures
 	* Signing outgoing Requests & Responses
 	* Validating signatures of incoming Requests & Responses
@@ -108,14 +108,14 @@ public void ConfigureServices(IServiceCollection services) {
 | AcceptSignedAssertionsOnly  | bool                                     | `false`          |
 | ServiceProviderCertificate  | X509Certificate2                         | `null`           |
 | IdentityProviderCertificate | X509Certificate2                         | `null`           |
-| LogoutResponseBinding       | SamlBindingBehavior                      | `null`           |
-| LogoutRequestBinding        | SamlBindingBehavior                      | `null`           |
-| AuthnRequestBinding         | SamlBindingBehavior                      | `null`           |
-| ClaimsSelector              | Func &lt;ICollection&lt;SamlAttribute&gt;, ICollection&lt;Claim&gt;&gt; | `null`           |
+| LogoutResponseBinding       | SamlBindingBehavior                      | `HttpRedirectBinding`           |
+| LogoutRequestBinding        | SamlBindingBehavior                      | `HttpRedirectBinding`           |
+| AuthnRequestBinding         | SamlBindingBehavior                      | `HttpRedirectBinding`           |
+| ClaimsSelector              | Func &lt;ICollection&lt;SamlAttribute&gt;, ICollection&lt;Claim&gt;&gt; | `_ => Array.Empty<Claim>()`           |
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our contributing process.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our contribution process.
 
 ## License
 
