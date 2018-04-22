@@ -9,9 +9,9 @@ namespace SamlOida.MessageHandler
     public abstract class IncomingSamlMessageHandler<THandlingResult, TMessageContext>
         where TMessageContext : SamlMessage, new()
     {
-        protected readonly SamlMessageParser<TMessageContext> MessageParser;
+        protected readonly ISamlMessageParser<TMessageContext> MessageParser;
 
-        protected IncomingSamlMessageHandler(SamlMessageParser<TMessageContext> messageParser)
+        protected IncomingSamlMessageHandler(ISamlMessageParser<TMessageContext> messageParser)
         {
             MessageParser = messageParser ?? throw new ArgumentNullException(nameof(messageParser));
         }

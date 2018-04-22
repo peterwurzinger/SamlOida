@@ -4,12 +4,12 @@ using System.Xml;
 
 namespace SamlOida.MessageHandler.Parser
 {
-    public abstract class SamlMessageParser<TMessageContext>
+    public abstract class SamlMessageParserBase<TMessageContext> : ISamlMessageParser<TMessageContext>
         where TMessageContext : SamlMessage, new()
     {
         protected abstract string RootElementName { get; }
 
-        internal TMessageContext Parse(XmlDocument message, SamlOptions options)
+        public TMessageContext Parse(XmlDocument message, SamlOptions options)
         {
             var msg = new TMessageContext();
 

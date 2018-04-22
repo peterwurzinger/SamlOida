@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace SamlOida.MessageHandler.Parser
 {
-    public class LogoutRequestParser : SamlMessageParser<SamlLogoutRequestMessage>
+    public class LogoutRequestParser : SamlMessageParserBase<SamlLogoutRequestMessage>
     {
         protected override string RootElementName => "LogoutRequest";
 

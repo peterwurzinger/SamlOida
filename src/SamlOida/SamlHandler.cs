@@ -49,7 +49,7 @@ namespace SamlOida
                 {
 
                     var responseMessage = _idpInitiatedLogoutRequestHandler.Handle(Options, Context);
-                    _idpInitiatedLogoutResponseHandler.Handle(Options, Context, responseMessage, Options.IdentityProviderLogOutUrl);
+                    _idpInitiatedLogoutResponseHandler.Handle(Options, Context, responseMessage, Options.IdentityProviderLogOutUrl, Options.LogoutResponseBinding);
                     return Task.FromResult(true);
                 }
 
@@ -71,7 +71,7 @@ namespace SamlOida
                 Issuer = Options.ServiceProviderEntityId,
                 Destination = Options.IdentityProviderSignOnUrl
             };
-            _authnRequestHandler.Handle(Options, Request.HttpContext, context, Options.IdentityProviderSignOnUrl, BuildRedirectUri(OriginalPath));
+            _authnRequestHandler.Handle(Options, Request.HttpContext, context, Options.IdentityProviderSignOnUrl, Options.AuthnRequestBinding, BuildRedirectUri(OriginalPath));
 
             return Task.CompletedTask;
         }
@@ -112,7 +112,7 @@ namespace SamlOida
                 SessionIndex = Context.User.Claims.FirstOrDefault(c => c.Type == SamlAuthenticationDefaults.SessionIndexClaimType)?.Value
             };
             _spInitiatedLogoutRequestHandler.Handle(Options, Context, logoutRequestMessage,
-                Options.IdentityProviderLogOutUrl, properties?.RedirectUri ?? Request.Path);
+                Options.IdentityProviderLogOutUrl, Options.LogoutRequestBinding, properties?.RedirectUri ?? Request.Path);
             return Task.CompletedTask;
         }
     }
